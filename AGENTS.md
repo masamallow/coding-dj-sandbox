@@ -92,6 +92,64 @@ Do not script them or recommend automating them in CI.
   Context7 indexes from GitHub; the active Tidal sources are on Codeberg and may be missing or outdated in the Context7 index.
   Use Context7 freely for non-Tidal libraries (general Haskell ecosystem packages such as `text`, `aeson`, `mtl`, etc.).
 
+## Tidal Pattern Conventions
+
+Applies when generating or editing `.tidal` files.
+
+### Channel Layout
+
+By convention, `d1` carries drums (kick, snare, hats), `d2` carries bass, and `d3` and above carry harmonic and lead voices, FX, and vocal samples.
+`hush` silences all channels. Follow whatever layout is already in use when extending an existing file.
+
+### Mini-notation First
+
+When generating pattern code,
+prefer string mini-notation inside `sound "..."` and other `Pattern`-typed string parameters over verbose `cat` / `fastcat` / `stack` constructions,
+unless a feature requires the explicit form.
+
+### In-File Comments
+
+Comments in `.tidal` files use `--`.
+Use them to label sections (intro, build, drop) and to record what changed during live iteration.
+When producing variants of a pattern, keep prior versions commented out for A/B comparison instead of deleting them.
+
+## Haskell Style
+
+Applies when generating or editing `.hs` files.
+
+### Auto-format After Writes
+
+After creating or modifying any `.hs` file, run Ormolu in-place against the affected file(s):
+
+```bash
+ormolu --mode inplace path/to/File.hs
+```
+
+Ormolu must be installed standalone (`cabal install ormolu`); the Ormolu bundled inside HLS is reachable only via the editor's LSP, not the shell.
+If `ormolu` is not on PATH, stop and tell the user — do not commit unformatted output.
+
+If Ormolu reports a parse error, treat that as a real failure of the generated code: show the error, fix the source, then retry the format.
+Do not skip the format step to move on.
+
+### Linting
+
+HLint (`cabal install hlint`) surfaces idiom suggestions.
+HLS shows them inline in the editor; from the shell, `hlint path/to/File.hs` lists them.
+Address HLint suggestions unless doing so harms live-coding readability (e.g. an eta-reduction that hides the pattern-channel slot).
+
+### Learning-Mode Comments
+
+The user is learning Haskell alongside Tidal.
+
+When generating non-trivial Haskell, add one-line explanatory comments for:
+
+- Type-class machinery (`Functor`, `Applicative`, `Monad`).
+- Operator sections and point-free constructions.
+- Idioms a Python/Go/Java engineer would not immediately recognize
+  (`<$>`, `<*>`, `>>=`, `&`, `flip`, `on`).
+
+Skip trivial syntax (`let` / `where`, basic function application).
+
 ## Out of Scope
 
 - DAW integration (Logic, Ableton Live) is parked until baseline Tidal fluency is reached.
