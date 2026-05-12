@@ -95,8 +95,6 @@ Do not script them or recommend automating them in CI.
 
 - Before suggesting an installation or upgrade step that touches SuperDirt Quarks,
   check whether the current Tidal release notes on Codeberg require a particular SuperDirt version (currently v1.7.4+).
-- When generating new pattern code, prefer mini-notation strings inside `sound "..."` over verbose `cat` / `fastcat` constructions,
-  unless a feature requires the latter.
 - When suggesting Haskell that goes into `BootTidal.hs` or imported helper modules at the workspace root, ensure compatibility with **GHC 9.6**.
   Avoid features added in 9.8+ unless explicitly approved.
 - Never assume the user wants Strudel output, even if examples online use Strudel syntax. Translate to TidalCycles syntax when the source is Strudel.
