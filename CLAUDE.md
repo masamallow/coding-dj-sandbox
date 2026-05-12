@@ -81,16 +81,6 @@ cabal --version  # expect 3.14.x
 SuperCollider startup, the SuperDirt boot block, and the VS Code "evaluate line" (`Ctrl+Enter`) flow are GUI / IDE workflows.
 Do not script them or recommend automating them in CI.
 
-## Coding Style
-
-- **Tidal patterns**: read top to bottom.
-  By convention, drums on `d1`, bass on `d2`, harmonic / lead voices on `d3` and above.
-  Use `hush` to silence all channels.
-- **Haskell**: formatting is delegated to **Ormolu** (the formatter bundled with Haskell Language Server).
-  Linting is delegated to **HLint**.
-- Comments inside `.tidal` files use `--`.
-  Use them to label sections (intro, build, drop) and to record what changed during iteration.
-
 ## Workflow Rules
 
 - Before suggesting an installation or upgrade step that touches SuperDirt Quarks,

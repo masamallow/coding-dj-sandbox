@@ -1,48 +1,38 @@
 ---
 paths:
   - "**/*.hs"
-  - "boot/**/*"
 ---
 
 # Haskell Style for This Sandbox
 
-These rules apply when editing `.hs` files (custom `BootTidal.hs`, helper modules, experiments).
+## Auto-format After Writes
 
-## Toolchain Compatibility
+After creating or modifying any `.hs` file, run Ormolu in-place against the affected file(s):
 
-- Target **GHC 9.6.x** (currently 9.6.7).
-  Do not propose features that require 9.8 or later (`ghc2024` extensions, `ImportedPaths`, etc.) without flagging the bump explicitly.
-- Use cabal `v2-style` commands (`cabal build`, `cabal install --lib`).
-  Avoid `v1-` commands; they are legacy.
-- Tidal 1.10+ assumes `network-3.1.x` and `text < 2.1`.
-  If a proposed dependency conflicts, raise that explicitly rather than auto-resolving with `--allow-newer`.
+```bash
+ormolu --mode inplace path/to/File.hs
+```
 
-## Style Defaults
+Ormolu must be installed standalone (`cabal install ormolu`); the Ormolu bundled inside HLS is reachable only via the editor's LSP, not the shell.
+If `ormolu` is not on PATH, stop and tell the user — do not commit unformatted output.
 
-- 2-space indentation. No tabs.
-- Module names match the file path (`Boot.Sandbox` lives at `boot/Boot/Sandbox.hs`).
-- Import ordering: standard libraries, then third-party, then local.
-  Within each group, alphabetical. One blank line between groups.
-- Prefer explicit imports over open imports for non-Tidal modules.
-  For `Sound.Tidal.Context`, the open import is idiomatic; keep it open.
+If Ormolu reports a parse error, treat that as a real failure of the generated code: show the error, fix the source, then retry the format.
+Do not skip the format step to move on.
 
-## Tidal-Specific Practices
+## Linting
 
-- Custom helpers in `BootTidal.hs` should follow the Tidal naming idiom: short, lowercase, no underscores (`bdroll`, not `bd_roll`).
-- Keep boot file additions self-contained.
-  If a helper depends on extra packages, put it in a separate module under `boot/` and `import` it from `BootTidal.hs`.
-- When defining new pattern combinators, give them a type signature (`Pattern a -> Pattern a` etc.).
-  Tidal's type machinery is informative and worth practicing.
+HLint (`cabal install hlint`) surfaces idiom suggestions.
+HLS shows them inline in the editor; from the shell, `hlint path/to/File.hs` lists them.
+Address HLint suggestions unless doing so harms live-coding readability (e.g. an eta-reduction that hides the pattern-channel slot).
 
 ## Learning-Mode Comments
 
 The user is learning Haskell alongside Tidal.
 
-When generating non-trivial Haskell code, include short explanatory comments for:
+When generating non-trivial Haskell, add one-line explanatory comments for:
 
-- Type-class machinery (Functor, Applicative, Monad usage).
+- Type-class machinery (`Functor`, `Applicative`, `Monad`).
 - Operator sections and point-free constructions.
-- Anything that exercises an idiom a Python/Go/Java engineer would not immediately recognize (`<$>`, `<*>`, `>>=`, `&`, `flip`, `on`).
+- Idioms a Python/Go/Java engineer would not immediately recognize (`<$>`, `<*>`, `>>=`, `&`, `flip`, `on`).
 
-Keep comments concise — one line per construct is usually enough.
-Do not add comments explaining trivial syntax (basic function application, `let` / `where`).
+Skip trivial syntax (`let` / `where`, basic function application).
