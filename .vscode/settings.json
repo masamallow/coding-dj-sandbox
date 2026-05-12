@@ -1,0 +1,12 @@
+{
+  "files.associations": {
+    "*.tidal": "haskell",
+    "BootTidal.hs": "haskell"
+  },
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "[haskell]": {
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true
+  }
+}
