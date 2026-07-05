@@ -31,6 +31,7 @@ The GitHub `tidalcycles/Tidal` and `tidalcycles/strudel` repos are archived (rea
 Active sources:
 - Tidal: <https://codeberg.org/uzu/tidal>
 - Strudel: <https://codeberg.org/uzu/strudel>
+- SuperDirt: <https://codeberg.org/musikinformatik/SuperDirt>
 - Current Tidal release: check <https://codeberg.org/uzu/tidal/releases> (also published to Hackage);
   do not record release versions here — they go stale.
 
@@ -40,11 +41,17 @@ Older blog posts and tutorials may still link to GitHub; treat those as informat
 ## Repository Layout
 
 - `patterns/` — `.tidal` files. One file per piece, experiment, or exercise.
-- `BootTidal.hs` (workspace root, **optional**) — Custom Tidal boot file.
-  Absent by default; the bundled Tidal package boot file is used.
-  When created, the VS Code extension setting `tidalcycles.useBootFileInCurrentDirectory` must be flipped to `true` for it to be picked up.
+- `coding-dj-sandbox.cabal` (workspace root) — Minimal cabal package that depends on `tidal`,
+  keeping the library repo-scoped (built into `dist-newstyle/` and the shared cabal store) instead of a user-global GHC environment.
+- `BootTidal.hs` (workspace root, committed) — Tidal boot script piped into the REPL;
+  a verbatim copy of the file shipped with the current Tidal release, customizable locally.
+  The VS Code extension resolves the boot file as:
+  `tidalcycles.bootTidalPath` setting → `BootTidal.hs` at the workspace root (auto-detected) → `ghc-pkg` fallback (which cannot see store-based cabal builds — keep the root file).
+- `boot/tidal-repl.sh` — Wrapper that the `tidalcycles.ghciPath` setting points at;
+  it cds to the repo root and launches `cabal repl`, because the extension spawns the REPL without setting a working directory.
 - `<Module>.hs` (workspace root) — Additional Haskell helper modules, imported from `BootTidal.hs` (e.g. `MyHelpers.hs`).
-  Keep flat at root so `ghci`'s default search path finds them without configuration.
+  Keep flat at root and register them under `exposed-modules` in `coding-dj-sandbox.cabal` so the REPL and HLS both see them.
+- `docs/setup.md` — Environment setup guide.
 
 ## File Conventions
 
@@ -52,24 +59,25 @@ Older blog posts and tutorials may still link to GitHub; treat those as informat
 - `.tidal` files live under `patterns/`. One artistic idea per file.
   Iterate inside the file, including through commented-out variants, rather than spawning new files for tiny tweaks.
 - Haskell utility modules use `.hs` and live at the **workspace root**, not in a subdirectory.
-  This matches the default `ghci` search path used by Tidal's editor plugins and avoids per-project `-i` flags.
+  Register them under `exposed-modules` in `coding-dj-sandbox.cabal`;
+  keeping them flat at root keeps `BootTidal.hs` imports and the cabal stanza simple.
 
 ## Common Commands
 
-Update Tidal Haskell library (after a Codeberg release):
+Update the Tidal Haskell library (after a Codeberg release), from the repo root:
 
 ```bash
 cabal update
-cabal install tidal --lib
+cabal build
 ```
 
-If an upgrade leaves `import Sound.Tidal.Context` broken or ambiguous,
-reset the default GHC environment file (`~/.ghc/*/environments/default`) and re-run the install.
+If an upgrade leaves the build or `import Sound.Tidal.Context` broken,
+delete `dist-newstyle/` and run `cabal build` again.
 
-Verify Tidal is importable from GHCi (`--lib` registers tidal in the default GHC environment, so plain `ghci` sees it):
+Verify Tidal is importable (the dependency is repo-scoped, so use `cabal repl` from the repo root rather than plain `ghci`):
 
 ```bash
-ghci
+cabal repl
 # at the prompt:
 # > import Sound.Tidal.Context
 # > tidal_version
@@ -82,7 +90,7 @@ ghc --version
 cabal --version
 ```
 
-SuperCollider startup, the SuperDirt boot block, and the VS Code "evaluate line" (`Ctrl+Enter`) flow are GUI / IDE workflows.
+SuperCollider startup, the SuperDirt boot block, and the VS Code evaluate flow (`Shift+Enter` one statement, `Ctrl+Enter` multiple lines, `Ctrl+Alt+H` hush) are GUI / IDE workflows.
 Do not script them or recommend automating them in CI.
 
 ## Workflow Rules
@@ -124,6 +132,6 @@ other agents must read them before editing such files.
 - Strudel REPL: <https://strudel.cc/>
 - Strudel source (active): <https://codeberg.org/uzu/strudel>
 - SuperCollider: <https://supercollider.github.io/>
-- SuperDirt: <https://github.com/musikinformatik/SuperDirt>
+- SuperDirt (active): <https://codeberg.org/musikinformatik/SuperDirt> (the GitHub repo is archived)
 - VS Code extension: <https://marketplace.visualstudio.com/items?itemName=tidalcycles.vscode-tidalcycles>
 - GHCup (Haskell toolchain): <https://www.haskell.org/ghcup/>

@@ -8,14 +8,17 @@ Haskell is a parallel learning track via the Tidal Haskell library.
 ```text
 .
 ├── patterns/                 # *.tidal files (live-coding patterns)
-├── BootTidal.hs              # (optional) custom Tidal boot file at root
+├── boot/tidal-repl.sh        # REPL wrapper used by the VS Code extension
+├── docs/setup.md             # environment setup guide
+├── BootTidal.hs              # Tidal boot script piped into the REPL
+├── coding-dj-sandbox.cabal   # minimal cabal package depending on tidal
 ├── *.hs                      # (optional) helper Haskell modules at root
 └── README.md
 ```
 
-`BootTidal.hs` is **not** included by default;
-the Tidal package's bundled boot file is used until you create one here and flip `tidalcycles.useBootFileInCurrentDirectory` to `true` in `.vscode/settings.json`.
-Helper modules (e.g. `MyHelpers.hs`) live at the workspace root so `BootTidal.hs` can `import` them without configuring `ghci` search paths.
+`BootTidal.hs` is a verbatim copy of the boot file shipped with the current Tidal release;
+the VS Code extension auto-detects it at the workspace root (no extra setting needed), and it is the place for local customization.
+Helper modules (e.g. `MyHelpers.hs`) live at the workspace root and are registered under `exposed-modules` in `coding-dj-sandbox.cabal` so both the REPL and HLS see them.
 
 ## Prerequisites
 
@@ -34,7 +37,7 @@ Helper modules (e.g. `MyHelpers.hs`) live at the workspace root so `BootTidal.hs
 [vscode-tidal]: https://marketplace.visualstudio.com/items?itemName=tidalcycles.vscode-tidalcycles
 [vscode-haskell]: https://marketplace.visualstudio.com/items?itemName=haskell.haskell
 
-TODO: Detailed setup steps are coming soon.
+See [docs/setup.md](./docs/setup.md) for the full environment setup procedure.
 
 ## Quick verification
 
@@ -42,18 +45,18 @@ TODO: Detailed setup steps are coming soon.
 ghc --version
 cabal --version
 
-# install / update Tidal lib
+# build / update the Tidal lib (repo-scoped, from the repo root)
 cabal update
-cabal install tidal --lib
+cabal build
 
-# verify import (tidal is registered in the default GHC environment)
-ghci
+# verify import (the dependency is project-scoped, so use cabal repl)
+cabal repl
 # > import Sound.Tidal.Context
 # > tidal_version
 ```
 
-If an upgrade breaks the import,
-reset the default GHC environment file (`~/.ghc/*/environments/default`) and re-run the install.
+If an upgrade breaks the build or the import,
+delete `dist-newstyle/` and run `cabal build` again.
 
 ## Upstream notes
 
