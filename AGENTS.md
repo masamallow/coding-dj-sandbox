@@ -16,7 +16,7 @@ Assume strong general programming fundamentals; do not assume Haskell or DSP kno
 - **Live coding language**: TidalCycles (Haskell DSL for pattern-oriented music)
 - **Audio engine**: SuperCollider + SuperDirt (`sclang` / `scsynth`)
 - **Editor**: VS Code with the `tidalcycles.vscode-tidalcycles` extension
-- **Haskell toolchain**: GHC 9.6.x and cabal 3.14.x via GHCup
+- **Haskell toolchain**: GHC and cabal via GHCup (`ghc --version` / `cabal --version` show the active toolchain)
 - **OS**: macOS on Apple Silicon (M3 Pro, 36 GB)
 
 Strudel (https://strudel.cc) is the popular browser-based alternative used by several reference performers,
@@ -26,12 +26,13 @@ but this repository deliberately standardizes on TidalCycles to gain Haskell exp
 ## Important Project Status (2025+)
 
 TidalCycles' upstream development moved from GitHub to **Codeberg** in mid-2025.
-The GitHub `tidalcycles/Tidal` and `tidalcycles/strudel` repos were archived (read-only) on 2025-06-13 and 2025-06-19 respectively.
+The GitHub `tidalcycles/Tidal` and `tidalcycles/strudel` repos are archived (read-only).
 
 Active sources:
 - Tidal: <https://codeberg.org/uzu/tidal>
 - Strudel: <https://codeberg.org/uzu/strudel>
-- Latest Tidal release at the time of writing: **1.10.0 ("waffle"), 2025-06-08**
+- Current Tidal release: check <https://codeberg.org/uzu/tidal/releases> (also published to Hackage);
+  do not record release versions here — they go stale.
 
 When researching Tidal behavior or filing/searching issues, prefer Codeberg over the archived GitHub repos.
 Older blog posts and tutorials may still link to GitHub; treat those as informational, not the source of truth.
@@ -62,20 +63,23 @@ cabal update
 cabal install tidal --lib
 ```
 
-Verify Tidal is importable from GHCi:
+If an upgrade leaves `import Sound.Tidal.Context` broken or ambiguous,
+reset the default GHC environment file (`~/.ghc/*/environments/default`) and re-run the install.
+
+Verify Tidal is importable from GHCi (`--lib` registers tidal in the default GHC environment, so plain `ghci` sees it):
 
 ```bash
-ghci -package tidal
+ghci
 # at the prompt:
 # > import Sound.Tidal.Context
 # > tidal_version
 ```
 
-Verify the Haskell toolchain:
+Verify the Haskell toolchain (versions are managed by GHCup, not pinned in this repo):
 
 ```bash
-ghc --version    # expect 9.6.x
-cabal --version  # expect 3.14.x
+ghc --version
+cabal --version
 ```
 
 SuperCollider startup, the SuperDirt boot block, and the VS Code "evaluate line" (`Ctrl+Enter`) flow are GUI / IDE workflows.
@@ -83,72 +87,27 @@ Do not script them or recommend automating them in CI.
 
 ## Workflow Rules
 
+- Do not hardcode upstream or toolchain versions in committed docs;
+  point to the source that manages them (Codeberg releases, Tidal release notes, `ghc --version` / `cabal --version`) instead.
 - Before suggesting an installation or upgrade step that touches SuperDirt Quarks,
-  check whether the current Tidal release notes on Codeberg require a particular SuperDirt version (currently v1.7.4+).
-- When suggesting Haskell that goes into `BootTidal.hs` or imported helper modules at the workspace root, ensure compatibility with **GHC 9.6**.
-  Avoid features added in 9.8+ unless explicitly approved.
-- Never assume the user wants Strudel output, even if examples online use Strudel syntax. Translate to TidalCycles syntax when the source is Strudel.
+  check whether the current Tidal release notes on Codeberg require a particular SuperDirt version.
+- When suggesting Haskell that goes into `BootTidal.hs` or imported helper modules at the workspace root, target the GHC that GHCup has installed (check `ghc --version`).
+  Do not assume language features from newer GHC releases unless explicitly approved.
+- Never assume the user wants Strudel output, even if examples online use Strudel syntax.
+  Translate to TidalCycles syntax when the source is Strudel.
 - For Tidal-specific documentation lookups, prefer direct web fetches from <https://tidalcycles.org> and <https://codeberg.org/uzu/tidal> over Context7.
   Context7 indexes from GitHub; the active Tidal sources are on Codeberg and may be missing or outdated in the Context7 index.
   Use Context7 freely for non-Tidal libraries (general Haskell ecosystem packages such as `text`, `aeson`, `mtl`, etc.).
 
-## Tidal Pattern Conventions
+## Style Rules
 
-Applies when generating or editing `.tidal` files.
+Path-scoped conventions live under [.claude/rules/](./.claude/rules/):
 
-### Channel Layout
+- [tidal-patterns.md](./.claude/rules/tidal-patterns.md) — follow when generating or editing `.tidal` files (channel layout, mini-notation first, in-file comments).
+- [haskell-style.md](./.claude/rules/haskell-style.md) — follow when generating or editing `.hs` files (Ormolu after writes, HLint, learning-mode comments).
 
-By convention, `d1` carries drums (kick, snare, hats), `d2` carries bass, and `d3` and above carry harmonic and lead voices, FX, and vocal samples.
-`hush` silences all channels. Follow whatever layout is already in use when extending an existing file.
-
-### Mini-notation First
-
-When generating pattern code,
-prefer string mini-notation inside `sound "..."` and other `Pattern`-typed string parameters over verbose `cat` / `fastcat` / `stack` constructions,
-unless a feature requires the explicit form.
-
-### In-File Comments
-
-Comments in `.tidal` files use `--`.
-Use them to label sections (intro, build, drop) and to record what changed during live iteration.
-When producing variants of a pattern, keep prior versions commented out for A/B comparison instead of deleting them.
-
-## Haskell Style
-
-Applies when generating or editing `.hs` files.
-
-### Auto-format After Writes
-
-After creating or modifying any `.hs` file, run Ormolu in-place against the affected file(s):
-
-```bash
-ormolu --mode inplace path/to/File.hs
-```
-
-Ormolu must be installed standalone (`cabal install ormolu`); the Ormolu bundled inside HLS is reachable only via the editor's LSP, not the shell.
-If `ormolu` is not on PATH, stop and tell the user — do not commit unformatted output.
-
-If Ormolu reports a parse error, treat that as a real failure of the generated code: show the error, fix the source, then retry the format.
-Do not skip the format step to move on.
-
-### Linting
-
-HLint (`cabal install hlint`) surfaces idiom suggestions.
-HLS shows them inline in the editor; from the shell, `hlint path/to/File.hs` lists them.
-Address HLint suggestions unless doing so harms live-coding readability (e.g. an eta-reduction that hides the pattern-channel slot).
-
-### Learning-Mode Comments
-
-The user is learning Haskell alongside Tidal.
-
-When generating non-trivial Haskell, add one-line explanatory comments for:
-
-- Type-class machinery (`Functor`, `Applicative`, `Monad`).
-- Operator sections and point-free constructions.
-- Idioms a Python/Go/Java engineer would not immediately recognize
-  (`<$>`, `<*>`, `>>=`, `&`, `flip`, `on`).
-
-Skip trivial syntax (`let` / `where`, basic function application).
+Claude Code loads these automatically when matching files are touched;
+other agents must read them before editing such files.
 
 ## Out of Scope
 

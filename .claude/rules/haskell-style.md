@@ -5,6 +5,11 @@ paths:
 
 # Haskell Style for This Sandbox
 
+Canonical Haskell rules for this repo;
+[AGENTS.md](../../AGENTS.md) links here for agents that do not load path-scoped rules automatically.
+These rules apply to `.hs` files only —
+never run Ormolu or HLint on `.tidal` files, which are pattern fragments rather than Haskell modules, even though VS Code associates them with the `haskell` language mode.
+
 ## Auto-format After Writes
 
 After creating or modifying any `.hs` file, run Ormolu in-place against the affected file(s):

@@ -1,10 +1,12 @@
 ---
 paths:
   - "**/*.tidal"
-  - "patterns/**/*"
 ---
 
 # Tidal Pattern Conventions
+
+Canonical `.tidal` conventions for this repo;
+[AGENTS.md](../../AGENTS.md) links here for agents that do not load path-scoped rules automatically.
 
 ## Channel Layout
 

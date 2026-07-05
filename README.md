@@ -1,8 +1,7 @@
 # Coding DJ Sandbox
 
-Personal sandbox for learning **Coding DJ** (live-coding music) on macOS,
-using TidalCycles + SuperCollider + VS Code as the primary stack. Haskell
-is a parallel learning track via the Tidal Haskell library.
+Personal sandbox for learning **Coding DJ** (live-coding music) on macOS, using TidalCycles + SuperCollider + VS Code as the primary stack.
+Haskell is a parallel learning track via the Tidal Haskell library.
 
 ## Layout
 
@@ -21,7 +20,7 @@ Helper modules (e.g. `MyHelpers.hs`) live at the workspace root so `BootTidal.hs
 ## Prerequisites
 
 - macOS (tested on Apple Silicon).
-- Haskell toolchain via [GHCup]: GHC 9.6.x, cabal 3.14.x.
+- Haskell toolchain via [GHCup]: GHC and cabal (versions are managed by GHCup, not pinned in this repo).
 - [SuperCollider] with `sc3-plugins` and `SuperDirt` Quark.
 - VS Code with two extensions:
   - [`tidalcycles.vscode-tidalcycles`][vscode-tidal] for `.tidal` evaluation.
@@ -40,23 +39,25 @@ TODO: Detailed setup steps are coming soon.
 ## Quick verification
 
 ```sh
-ghc --version    # 9.6.x
-cabal --version  # 3.14.x
+ghc --version
+cabal --version
 
 # install / update Tidal lib
 cabal update
 cabal install tidal --lib
 
-# verify import
-ghci -package tidal
+# verify import (tidal is registered in the default GHC environment)
+ghci
 # > import Sound.Tidal.Context
 # > tidal_version
 ```
 
+If an upgrade breaks the import,
+reset the default GHC environment file (`~/.ghc/*/environments/default`) and re-run the install.
+
 ## Upstream notes
 
-TidalCycles upstream development moved from GitHub to Codeberg in
-mid-2025. Use these as the active sources:
+TidalCycles upstream development moved from GitHub to Codeberg in mid-2025. Use these as the active sources:
 
 - TidalCycles: <https://codeberg.org/uzu/tidal>
 - Strudel: <https://codeberg.org/uzu/strudel>
@@ -65,6 +66,5 @@ The archived GitHub repos remain readable but receive no updates.
 
 ## License
 
-This is a personal sandbox; no license file. Patterns and Haskell snippets
-inside may incorporate ideas from the Tidal community — credit upstream
-when copying non-trivial work.
+This is a personal sandbox; no license file.
+Patterns and Haskell snippets inside may incorporate ideas from the Tidal community — credit upstream when copying non-trivial work.
