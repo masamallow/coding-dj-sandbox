@@ -1,7 +1,7 @@
 # Coding DJ Sandbox
 
-Personal sandbox for learning **Coding DJ** (live-coding music) on macOS, using TidalCycles + SuperCollider + VS Code as the primary stack.
-Haskell is a parallel learning track via the Tidal Haskell library.
+A sandbox for **Coding DJ** (live-coding music) on macOS, built on TidalCycles + SuperCollider + VS Code,
+with Haskell catch-up as a parallel track through Tidal's Haskell foundation.
 
 ## Layout
 
@@ -13,12 +13,13 @@ Haskell is a parallel learning track via the Tidal Haskell library.
 ├── docs/setup.md             # environment setup guide
 ├── BootTidal.hs              # Tidal boot script piped into the REPL
 ├── coding-dj-sandbox.cabal   # minimal cabal package depending on tidal
+├── hie.yaml                  # HLS loads src/ via cabal and ignores patterns/ and BootTidal.hs
 ├── .vscode/settings.example.json   # template for the git-ignored .vscode/settings.json
 └── README.md
 ```
 
 `BootTidal.hs` is a verbatim copy of the boot file shipped with the current Tidal release;
-the VS Code extension auto-detects it at the workspace root (no extra setting needed), and it is the place for local customization.
+the VS Code extension auto-detects it at the workspace root (no extra setting needed); local additions go below the `-- Local additions` marker at its end so upgrades diff cleanly.
 Helper modules (e.g. `MyHelpers.hs`) live at `src/` and are registered under `exposed-modules` in `coding-dj-sandbox.cabal` so both the REPL and HLS see them.
 VS Code wiring: copy `.vscode/settings.example.json` to the git-ignored `.vscode/settings.json` and point `tidalcycles.ghciPath` at `boot/ghci`
 (see [docs/setup.md](./docs/setup.md#7-vs-code-wiring)).
@@ -28,11 +29,12 @@ VS Code wiring: copy `.vscode/settings.example.json` to the git-ignored `.vscode
 - macOS (tested on Apple Silicon).
 - Haskell toolchain via [GHCup]: GHC and cabal (versions are managed by GHCup, not pinned in this repo).
 - [SuperCollider] with `sc3-plugins` and `SuperDirt` Quark.
-- VS Code with two extensions:
+- VS Code with the extensions recommended in `.vscode/extensions.json`:
   - [`tidalcycles.vscode-tidalcycles`][vscode-tidal] for `.tidal` evaluation.
   - [`haskell.haskell`][vscode-haskell] for the Haskell Language Server,
     which provides the **Ormolu** formatter and surfaces **HLint** diagnostics.
     Formatting and linting policy is delegated to these tools (see `.claude/rules/haskell-style.md`).
+  - `haskell.language-haskell` for syntax highlighting, which `.tidal` files reuse.
 - HLint CLI (optional, useful outside HLS): `cabal install hlint`.
 
 > [!NOTE]
@@ -71,6 +73,7 @@ TidalCycles upstream development moved from GitHub to Codeberg in mid-2025. Use 
 
 - TidalCycles: <https://codeberg.org/uzu/tidal>
 - Strudel: <https://codeberg.org/uzu/strudel>
+- SuperDirt: <https://codeberg.org/musikinformatik/SuperDirt>
 
 The archived GitHub repos remain readable but receive no updates.
 

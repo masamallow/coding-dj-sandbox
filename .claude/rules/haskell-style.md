@@ -10,7 +10,13 @@ Canonical Haskell rules for this repo;
 These rules apply to `.hs` files only —
 never run Ormolu or HLint on `.tidal` files, which are pattern fragments rather than Haskell modules, even though VS Code associates them with the `haskell` language mode.
 `BootTidal.hs` is also exempt:
-it is a GHCi script (it contains `:set` commands), not a Haskell module, so Ormolu cannot parse it — keep it verbatim against the upstream copy.
+it is a GHCi script (it contains `:set` commands), not a Haskell module, so Ormolu cannot parse it.
+Keep everything above its trailing `-- Local additions` marker verbatim against the upstream copy; local lines go below the marker.
+
+## Module Placement
+
+New modules go under `src/` and must be registered under `exposed-modules` in `coding-dj-sandbox.cabal`; otherwise neither `cabal repl` nor HLS sees them.
+The library sets `default-language: GHC2021`, so do not add `LANGUAGE` pragmas for extensions it already enables.
 
 ## Auto-format After Writes
 

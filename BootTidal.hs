@@ -25,3 +25,5 @@ instance Tidally where tidal = tidalInst
 
 :set prompt "tidal> "
 :set prompt-cont ""
+
+-- Local additions (keep everything above this line verbatim with the upstream BootTidal.hs).

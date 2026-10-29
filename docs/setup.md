@@ -41,7 +41,8 @@ brew --version
 Cross-check the GHC version against the CI-tested GHC versions listed in the current [Tidal release notes](https://codeberg.org/uzu/tidal/releases) before building.
 
 VS Code should have the extensions recommended by [.vscode/extensions.json](../.vscode/extensions.json):
-`tidalcycles.vscode-tidalcycles`, `haskell.haskell`, and `justusadam.language-haskell`.
+`tidalcycles.vscode-tidalcycles`, `haskell.haskell`, and `haskell.language-haskell`
+(the syntax extension formerly published as `justusadam.language-haskell`; uninstall the old one if both are installed).
 
 ## 2. SuperCollider
 
@@ -108,10 +109,10 @@ Plain `ghci` outside `cabal repl` will not see `tidal` — that is by design; th
 ## 6. BootTidal.hs
 
 [BootTidal.hs](../BootTidal.hs) at the repo root is the GHCi boot script the editor pipes into the REPL; it imports Tidal and starts the stream.
-It is a verbatim copy of the file shipped with the current Tidal release, committed so the VS Code extension finds it deterministically:
+Everything above its trailing `-- Local additions` marker is a verbatim copy of the file shipped with the current Tidal release, committed so the VS Code extension finds it deterministically:
 the extension resolves the boot file as `tidalcycles.bootTidalPath` setting → workspace-root `BootTidal.hs` → a `ghc-pkg` fallback that cannot see store-based cabal builds.
-It is a GHCi script (note the `:set` lines), not a Haskell module, so Ormolu/HLint do not apply and Haskell Language Server diagnostics on it can be ignored.
-Customize it here (aliases, latency, Link sync) as needed.
+It is a GHCi script (note the `:set` lines), not a Haskell module, so Ormolu/HLint do not apply, and [hie.yaml](../hie.yaml) keeps the Haskell Language Server from loading it.
+Put local customization (aliases, latency, Link sync, imports from `src/`) below the marker, so an upgrade only has to diff the part above it.
 
 ## 7. VS Code wiring
 
@@ -143,6 +144,9 @@ Default keybindings of the extension:
 - `Ctrl+Enter` — evaluate multiple lines
 - `Ctrl+Alt+H` — hush (silence all channels)
 
+[hie.yaml](../hie.yaml) tells the Haskell Language Server to load `src/` through cabal and to ignore `patterns/` and `BootTidal.hs`,
+which VS Code opens in `haskell` mode but which are not Haskell modules.
+
 ## 8. Formatter and linter (Haskell side)
 
 Required by [.claude/rules/haskell-style.md](../.claude/rules/haskell-style.md) when editing `.hs` files:
@@ -171,7 +175,7 @@ When re-installing after an upgrade, add `--overwrite-policy=always`.
 - New Tidal release (watch [Codeberg releases](https://codeberg.org/uzu/tidal/releases)):
   run `cabal update && cabal build` from the repo root.
   If the solver keeps an old version, delete `dist-newstyle/` and build again.
-  Afterwards, diff the repo's `BootTidal.hs` against the copy shipped with the new release and merge upstream changes.
+  Afterwards, diff the part of `BootTidal.hs` above the `-- Local additions` marker against the copy shipped with the new release and merge upstream changes.
 - GHC upgrade (via `ghcup`): re-run `cabal build`; the store is per-GHC-version, so the first build recompiles dependencies.
 - SuperDirt / Dirt-Samples updates: `[GUI]` via the Quarks GUI in the SC IDE.
 
@@ -185,7 +189,7 @@ When re-installing after an upgrade, add `--overwrite-policy=always`.
 - "cannot be opened" dialogs for sc3-plugins: run the `xattr` command from step 3 and recompile the class library.
 - First server boot may trigger a macOS microphone-permission prompt (the server opens input buses); allow or deny — playback works either way.
 - Bluetooth headsets often fail with an input/output sample-rate mismatch; align both devices in Audio MIDI Setup or use the built-in output.
-- HLS shows errors in `BootTidal.hs`: expected, since it is a GHCi script rather than a module; ignore them.
+- HLS shows errors in `BootTidal.hs` or a `.tidal` file: `hie.yaml` should make HLS ignore both; check that the file falls under a `none` cradle there and restart the language server.
 
 ## Appendix: global install (upstream docs approach)
 
