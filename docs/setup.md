@@ -18,7 +18,7 @@ Conventions used below:
 SuperCollider (with the SuperDirt quark) is the audio engine; it listens for OSC messages.
 The `tidal` Haskell library runs inside a GHCi REPL started by the VS Code extension and sends those messages when you evaluate patterns.
 
-This repository is a minimal cabal package ([coding-dj-sandbox.cabal](../coding-dj-sandbox.cabal)) whose only job is to depend on `tidal`.
+This repository is a minimal cabal package ([coding-dj-sandbox.cabal](../coding-dj-sandbox.cabal)) whose job is to depend on `tidal` and to compile helper modules under `src/`.
 With cabal's Nix-style local builds, the dependency stays repo-scoped:
 the build plan lives in `dist-newstyle/` (gitignored) and compiled packages live in the shared cabal store (`~/.cabal/store`).
 Nothing is written to the user-global GHC environment, so other Haskell projects are unaffected.
@@ -82,7 +82,7 @@ This installs the SuperDirt quark plus the Dirt-Samples library and recompiles t
 The first run downloads a large sample set; give it several minutes and watch the post window.
 
 The active SuperDirt repository is <https://codeberg.org/musikinformatik/SuperDirt>; the GitHub repository is archived.
-The Quarks directory may still resolve the name to the archived GitHub mirror — that clone works, but confirm the source in the Quarks GUI if you ever need an update.
+The Quarks directory now points at the Codeberg repository, so a fresh install clones from there; an install made before the move may still track the archived GitHub clone — check the source in the Quarks GUI before updating.
 Before upgrading SuperDirt, check whether the current Tidal release notes require a particular version.
 
 ## 5. Tidal library (repo-scoped cabal build)
@@ -189,12 +189,14 @@ When re-installing after an upgrade, add `--overwrite-policy=always`.
 
 ## Appendix: global install (upstream docs approach)
 
-The upstream Tidal docs install the library user-globally instead:
+The upstream Tidal docs install the library user-globally instead.
+The macOS page uses `cabal v1-install tidal` (or the `tidal-bootstrap` script, which runs the same command); the Linux page uses `cabal install tidal --lib`:
 
 ```sh
-cabal install tidal --lib
+cabal update
+cabal v1-install tidal
 ```
 
-That writes a user-global GHC environment file (`~/.ghc/<platform>/environments/default`) that every plain `ghci` picks up, with no wrapper or project file needed.
-It is simpler, but it leaks into all other Haskell work on the machine, and repeated `--lib` installs can leave the environment inconsistent (recovery: delete the default environment file and re-run a single install listing all needed libraries).
+Either form registers `tidal` where every plain `ghci` picks it up (the v1 user package database, or a user-global GHC environment file under `~/.ghc/<platform>/environments/`), with no wrapper or project file needed.
+It is simpler, but it leaks into all other Haskell work on the machine, and repeated `--lib` installs can leave the environment file inconsistent (recovery: delete it and re-run a single install listing all needed libraries).
 This repo intentionally uses the cabal-project approach above instead.

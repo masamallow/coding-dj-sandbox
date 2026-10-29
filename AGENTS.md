@@ -54,8 +54,9 @@ Older blog posts and tutorials may still link to GitHub; treat those as informat
   It must be named `ghci`: the extension treats the setting as the location of a `ghci` binary and appends `/ghci` to any other path.
 - `.vscode/settings.example.json` — Template for the git-ignored `.vscode/settings.json`;
   it carries the shared settings (including the `*.tidal` → `haskell` association the extension needs to activate) plus a placeholder `tidalcycles.ghciPath`, which is machine-specific.
-- `<Module>.hs` (workspace root) — Additional Haskell helper modules, imported from `BootTidal.hs` (e.g. `MyHelpers.hs`).
-  Keep flat at root and register them under `exposed-modules` in `coding-dj-sandbox.cabal` so the REPL and HLS both see them.
+- `src/<Module>.hs` — Additional Haskell helper modules, imported from `BootTidal.hs` (e.g. `src/MyHelpers.hs`).
+  Register each one under `exposed-modules` in `coding-dj-sandbox.cabal` so the REPL and HLS both see them;
+  until the first module exists, `cabal repl` prints `Warning: No exposed modules`, which is expected.
 - `docs/setup.md` — Environment setup guide.
 
 ## File Conventions
@@ -63,9 +64,9 @@ Older blog posts and tutorials may still link to GitHub; treat those as informat
 - Tidal patterns use the `.tidal` extension (associated with the VS Code extension and used by tooling for syntax handling).
 - `.tidal` files live under `patterns/`. One artistic idea per file.
   Iterate inside the file, including through commented-out variants, rather than spawning new files for tiny tweaks.
-- Haskell utility modules use `.hs` and live at the **workspace root**, not in a subdirectory.
+- Haskell utility modules use `.hs` and live under `src/`, the cabal library's `hs-source-dirs`.
   Register them under `exposed-modules` in `coding-dj-sandbox.cabal`;
-  keeping them flat at root keeps `BootTidal.hs` imports and the cabal stanza simple.
+  `cabal repl` then loads them, so `BootTidal.hs` can import them without `-i` flags.
 
 ## Common Commands
 
@@ -104,7 +105,7 @@ Do not script them or recommend automating them in CI.
   point to the source that manages them (Codeberg releases, Tidal release notes, `ghc --version` / `cabal --version`) instead.
 - Before suggesting an installation or upgrade step that touches SuperDirt Quarks,
   check whether the current Tidal release notes on Codeberg require a particular SuperDirt version.
-- When suggesting Haskell that goes into `BootTidal.hs` or imported helper modules at the workspace root, target the GHC that GHCup has installed (check `ghc --version`).
+- When suggesting Haskell that goes into `BootTidal.hs` or imported helper modules under `src/`, target the GHC that GHCup has installed (check `ghc --version`).
   Do not assume language features from newer GHC releases unless explicitly approved.
 - Never assume the user wants Strudel output, even if examples online use Strudel syntax.
   Translate to TidalCycles syntax when the source is Strudel.
@@ -133,7 +134,7 @@ other agents must read them before editing such files.
 
 - Tidal docs: <https://tidalcycles.org/>
 - Tidal source (active): <https://codeberg.org/uzu/tidal>
-- Tidal Club forum: <https://club.tidalcycles.org/>
+- Uzu forum (formerly Tidal Club; covers Tidal and Strudel): <https://uzu.lurk.org/>
 - Strudel REPL: <https://strudel.cc/>
 - Strudel source (active): <https://codeberg.org/uzu/strudel>
 - SuperCollider: <https://supercollider.github.io/>
