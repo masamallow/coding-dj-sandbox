@@ -1,41 +1,66 @@
 # Coding DJ Sandbox
 
+[![tidal on Hackage](https://img.shields.io/hackage/v/tidal?label=tidal%20on%20Hackage&logo=haskell&logoColor=white)](https://hackage.haskell.org/package/tidal)
+[![Haskell: GHC + cabal via GHCup](https://img.shields.io/badge/Haskell-GHC%20%2B%20cabal%20via%20GHCup-5e5086?logo=haskell&logoColor=white)](https://www.haskell.org/ghcup/)
+[![audio: SuperCollider + SuperDirt](https://img.shields.io/badge/audio-SuperCollider%20%2B%20SuperDirt-2d2d2d)](https://codeberg.org/musikinformatik/SuperDirt)
+[![editor: VS Code](https://img.shields.io/badge/editor-VS%20Code-0078d7)](https://marketplace.visualstudio.com/items?itemName=tidalcycles.vscode-tidalcycles)
+[![platform: macOS (Apple Silicon)](https://img.shields.io/badge/platform-macOS%20(Apple%20Silicon)-000000?logo=apple&logoColor=white)](./docs/setup.md)
+[![upstream: Codeberg](https://img.shields.io/badge/upstream-Codeberg-2185D0?logo=codeberg&logoColor=white)](https://codeberg.org/uzu/tidal)
+[![license: TBD (MIT planned)](https://img.shields.io/badge/license-TBD%20(MIT%20planned)-lightgrey)](#-license)
+
 A sandbox for **Coding DJ** (live-coding music) on macOS, built on TidalCycles + SuperCollider + VS Code,
 with Haskell catch-up as a parallel track through Tidal's Haskell foundation.
 
-## Layout
+## 🎯 Goals
+
+- Develop live-coding music performance skills with [TidalCycles](https://tidalcycles.org/).
+- Use Tidal's Haskell foundation as a vehicle for learning Haskell.
+
+Patterns and examples default to TidalCycles.  
+[Strudel](https://strudel.cc/) is Tidal's browser-based sibling and a handy way to play without the SuperCollider stack; translating between the two is routine.
+
+## 🧰 Stack
+
+| Role | Choice |
+| --- | --- |
+| Live-coding language | TidalCycles (a Haskell DSL for pattern-oriented music) |
+| Audio engine | SuperCollider + the SuperDirt Quark (`sclang` / `scsynth`) |
+| Editor | VS Code with the `tidalcycles.vscode-tidalcycles` extension and the Haskell Language Server |
+| Haskell toolchain | GHC and cabal via GHCup; the `tidal` library stays repo-scoped through a minimal cabal package |
+| OS | macOS on Apple Silicon |
+
+## 🗂️ Project structure
 
 ```text
 .
-├── patterns/                 # *.tidal files (live-coding patterns)
-├── src/*.hs                  # (optional) helper Haskell modules
+├── patterns/                 # *.tidal files (live-coding patterns), one idea per file
+├── src/*.hs                  # (optional) helper Haskell modules, registered in the cabal file
 ├── boot/ghci                 # REPL wrapper (cabal repl) spawned by the VS Code extension
 ├── docs/setup.md             # environment setup guide
 ├── BootTidal.hs              # Tidal boot script piped into the REPL
 ├── coding-dj-sandbox.cabal   # minimal cabal package depending on tidal
 ├── hie.yaml                  # HLS loads src/ via cabal and ignores patterns/ and BootTidal.hs
 ├── .vscode/settings.example.json   # template for the git-ignored .vscode/settings.json
+├── AGENTS.md                 # instructions for AI coding agents (imported by CLAUDE.md)
 └── README.md
 ```
 
-`BootTidal.hs` is a verbatim copy of the boot file shipped with the current Tidal release;
-the VS Code extension auto-detects it at the workspace root (no extra setting needed); local additions go below the `-- Local additions` marker at its end so upgrades diff cleanly.  
-Helper modules (e.g. `MyHelpers.hs`) live at `src/` and are registered under `exposed-modules` in `coding-dj-sandbox.cabal` so both the REPL and HLS see them.  
-VS Code wiring: copy `.vscode/settings.example.json` to the git-ignored `.vscode/settings.json` and point `tidalcycles.ghciPath` at `boot/ghci`
-(see [docs/setup.md](./docs/setup.md#7-vs-code-wiring)).
+`BootTidal.hs` is the boot file shipped with the current Tidal release;
+the VS Code extension auto-detects it at the workspace root, and local additions go below the `-- Local additions` marker at its end so upgrades diff cleanly.  
+Helper modules (e.g. `src/MyHelpers.hs`) are registered under `exposed-modules` in `coding-dj-sandbox.cabal` so both the REPL and HLS see them.
 
-## Prerequisites
+## ✅ Prerequisites
 
 - macOS (tested on Apple Silicon).
 - Haskell toolchain via [GHCup]: GHC and cabal (versions are managed by GHCup, not pinned in this repo).
-- [SuperCollider] with `sc3-plugins` and `SuperDirt` Quark.
-- VS Code with the extensions recommended in `.vscode/extensions.json`:
+- [SuperCollider] with `sc3-plugins` and the `SuperDirt` Quark.
+- VS Code with the extensions recommended in [.vscode/extensions.json](./.vscode/extensions.json):
   - [`tidalcycles.vscode-tidalcycles`][vscode-tidal] for `.tidal` evaluation.
   - [`haskell.haskell`][vscode-haskell] for the Haskell Language Server,
-    which provides the **Ormolu** formatter and surfaces **HLint** diagnostics.  
-    Formatting and linting policy is delegated to these tools (see `.claude/rules/haskell-style.md`).
+    which provides the Ormolu formatter and surfaces HLint diagnostics.  
+    Formatting and linting policy is delegated to these tools (see [.claude/rules/haskell-style.md](./.claude/rules/haskell-style.md)).
   - `haskell.language-haskell` for syntax highlighting, which `.tidal` files reuse.
-- HLint CLI (optional, useful outside HLS): `cabal install hlint`.
+- Ormolu and HLint CLIs for formatting and linting outside the editor: `cabal install ormolu hlint`.
 
 > [!NOTE]
 > The Tidal extension sees little upstream activity: as of 2026-10 it has had no release since 2025-05, and the official Tidal tutorial assumes the Pulsar editor.  
@@ -46,38 +71,76 @@ VS Code wiring: copy `.vscode/settings.example.json` to the git-ignored `.vscode
 [vscode-tidal]: https://marketplace.visualstudio.com/items?itemName=tidalcycles.vscode-tidalcycles
 [vscode-haskell]: https://marketplace.visualstudio.com/items?itemName=haskell.haskell
 
-See [docs/setup.md](./docs/setup.md) for the full environment setup procedure.
+## 🚀 Getting started
 
-## Quick verification
+[docs/setup.md](./docs/setup.md) walks through the whole environment, from SuperCollider and SuperDirt to the VS Code wiring and a smoke test.  
+The repository side comes down to three steps, all from the repo root.
+
+Build the repo-scoped Tidal library:
 
 ```sh
 ghc --version
 cabal --version
-
-# build / update the Tidal lib (repo-scoped, from the repo root)
 cabal update
 cabal build
+```
 
-# verify import (the dependency is project-scoped, so use cabal repl)
+Wire VS Code to the REPL wrapper (the value is machine-specific, so the file is git-ignored):
+
+```sh
+cp .vscode/settings.example.json .vscode/settings.json
+# then edit tidalcycles.ghciPath to <this repo>/boot/ghci
+```
+
+Verify that Tidal is importable (the dependency is project-scoped, so use `cabal repl` rather than plain `ghci`):
+
+```sh
 cabal repl
 # > import Sound.Tidal.Context
 # > tidal_version
 ```
 
-If an upgrade breaks the build or the import,
-delete `dist-newstyle/` and run `cabal build` again.
+## 🎛️ Usage
 
-## Upstream notes
+1. Launch SuperCollider and evaluate `SuperDirt.start` in the SC IDE; wait until the post window reports it is listening.
+2. Open a `.tidal` file under `patterns/` in VS Code.  
+   The first evaluation boots Tidal through `boot/ghci` and `BootTidal.hs`.
+3. Evaluate: `Shift+Enter` runs the current statement, `Ctrl+Enter` the blank-line-separated block under the cursor, and `Ctrl+Alt+H` hushes every channel.
 
-TidalCycles upstream development moved from GitHub to Codeberg in mid-2025. Use these as the active sources:
+Keep one artistic idea per `.tidal` file and iterate inside it, leaving earlier variants commented out for A/B comparison.  
+Conventions for channels, mini-notation and comments are in [.claude/rules/tidal-patterns.md](./.claude/rules/tidal-patterns.md).
 
-- TidalCycles: <https://codeberg.org/uzu/tidal>
-- Strudel: <https://codeberg.org/uzu/strudel>
+## 🔄 Maintenance
+
+- New Tidal release (watch the [Codeberg releases](https://codeberg.org/uzu/tidal/releases)): run `cabal update && cabal build`.  
+  If the solver keeps an old version, delete `dist-newstyle/` and build again.  
+  Then diff the part of `BootTidal.hs` above the `-- Local additions` marker against the copy shipped with the new release.
+- GHC upgrade via `ghcup`: re-run `cabal build`; the store is per GHC version, so the first build recompiles dependencies.
+- SuperDirt and Dirt-Samples updates: through the Quarks GUI in the SC IDE.
+
+## 🧭 Scope
+
+In scope: Tidal patterns, Haskell helper modules, and the editor and audio setup that makes them playable.  
+Parked until baseline Tidal fluency is reached: DAW integration (Logic, Ableton Live), visual live coding (Hydra), and audio rendering or mastering pipelines.
+
+## 📚 References
+
+TidalCycles upstream development moved from GitHub to Codeberg in mid-2025, and SuperDirt followed in late 2025; the archived GitHub repos remain readable but receive no updates.
+
+- Tidal docs: <https://tidalcycles.org/>
+- Tidal source and releases: <https://codeberg.org/uzu/tidal>
 - SuperDirt: <https://codeberg.org/musikinformatik/SuperDirt>
+- Strudel: <https://codeberg.org/uzu/strudel> (REPL at <https://strudel.cc/>)
+- Uzu forum (formerly Tidal Club): <https://uzu.lurk.org/>
+- SuperCollider: <https://supercollider.github.io/>
+- GHCup: <https://www.haskell.org/ghcup/>
 
-The archived GitHub repos remain readable but receive no updates.
+## 🤖 AI agents
 
-## License
+Instructions for AI coding agents live in [AGENTS.md](./AGENTS.md), which [CLAUDE.md](./CLAUDE.md) imports.  
+Path-scoped conventions for `.tidal` and `.hs` files are under [.claude/rules/](./.claude/rules/).
+
+## 📄 License
 
 Not yet licensed (MIT planned); to be decided before publishing.  
 Patterns and Haskell snippets inside may incorporate ideas from the Tidal community — credit upstream when copying non-trivial work.
