@@ -19,8 +19,8 @@ with Haskell catch-up as a parallel track through Tidal's Haskell foundation.
 ```
 
 `BootTidal.hs` is a verbatim copy of the boot file shipped with the current Tidal release;
-the VS Code extension auto-detects it at the workspace root (no extra setting needed); local additions go below the `-- Local additions` marker at its end so upgrades diff cleanly.
-Helper modules (e.g. `MyHelpers.hs`) live at `src/` and are registered under `exposed-modules` in `coding-dj-sandbox.cabal` so both the REPL and HLS see them.
+the VS Code extension auto-detects it at the workspace root (no extra setting needed); local additions go below the `-- Local additions` marker at its end so upgrades diff cleanly.  
+Helper modules (e.g. `MyHelpers.hs`) live at `src/` and are registered under `exposed-modules` in `coding-dj-sandbox.cabal` so both the REPL and HLS see them.  
 VS Code wiring: copy `.vscode/settings.example.json` to the git-ignored `.vscode/settings.json` and point `tidalcycles.ghciPath` at `boot/ghci`
 (see [docs/setup.md](./docs/setup.md#7-vs-code-wiring)).
 
@@ -32,13 +32,13 @@ VS Code wiring: copy `.vscode/settings.example.json` to the git-ignored `.vscode
 - VS Code with the extensions recommended in `.vscode/extensions.json`:
   - [`tidalcycles.vscode-tidalcycles`][vscode-tidal] for `.tidal` evaluation.
   - [`haskell.haskell`][vscode-haskell] for the Haskell Language Server,
-    which provides the **Ormolu** formatter and surfaces **HLint** diagnostics.
+    which provides the **Ormolu** formatter and surfaces **HLint** diagnostics.  
     Formatting and linting policy is delegated to these tools (see `.claude/rules/haskell-style.md`).
   - `haskell.language-haskell` for syntax highlighting, which `.tidal` files reuse.
 - HLint CLI (optional, useful outside HLS): `cabal install hlint`.
 
 > [!NOTE]
-> The Tidal extension sees little upstream activity: as of 2026-10 it has had no release since 2025-05, and the official Tidal tutorial assumes the Pulsar editor.
+> The Tidal extension sees little upstream activity: as of 2026-10 it has had no release since 2025-05, and the official Tidal tutorial assumes the Pulsar editor.  
 > It works with the current Tidal release, but check the [Marketplace page][vscode-tidal] and the [editor docs](https://tidalcycles.org/docs/getting-started/editor/) before relying on newer features.
 
 [GHCup]: https://www.haskell.org/ghcup/
@@ -79,5 +79,5 @@ The archived GitHub repos remain readable but receive no updates.
 
 ## License
 
-Not yet licensed (MIT planned); to be decided before publishing.
+Not yet licensed (MIT planned); to be decided before publishing.  
 Patterns and Haskell snippets inside may incorporate ideas from the Tidal community — credit upstream when copying non-trivial work.

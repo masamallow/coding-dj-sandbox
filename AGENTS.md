@@ -20,13 +20,13 @@ Assume strong general programming fundamentals; do not assume Haskell or DSP kno
 - **Haskell toolchain**: GHC and cabal via GHCup (`ghc --version` / `cabal --version` show the active toolchain)
 - **OS**: macOS on Apple Silicon (M3 Pro, 36 GB)
 
-Strudel (https://strudel.cc) is Tidal's browser-based sibling and a handy way to play without the SuperCollider stack.
-Conversations default to TidalCycles: write and explain patterns in Tidal unless the user asks for Strudel.
+Strudel (https://strudel.cc) is Tidal's browser-based sibling and a handy way to play without the SuperCollider stack.  
+Conversations default to TidalCycles: write and explain patterns in Tidal unless the user asks for Strudel.  
 Translating in either direction (Strudel → Tidal, Tidal → Strudel) is an ordinary request when it comes up.
 
 ## Important Project Status (2025+)
 
-TidalCycles' upstream development moved from GitHub to **Codeberg** in mid-2025, and SuperDirt followed in late 2025.
+TidalCycles' upstream development moved from GitHub to **Codeberg** in mid-2025, and SuperDirt followed in late 2025.  
 The GitHub `tidalcycles/Tidal`, `tidalcycles/strudel` and `musikinformatik/SuperDirt` repos are archived (read-only).
 
 Active sources:
@@ -36,7 +36,7 @@ Active sources:
 - Current Tidal release: check <https://codeberg.org/uzu/tidal/releases> (also published to Hackage);
   do not record release versions here — they go stale.
 
-When researching Tidal behavior or filing/searching issues, prefer Codeberg over the archived GitHub repos.
+When researching Tidal behavior or filing/searching issues, prefer Codeberg over the archived GitHub repos.  
 Older blog posts and tutorials may still link to GitHub; treat those as informational, not the source of truth.
 
 ## Repository Layout
@@ -44,29 +44,29 @@ Older blog posts and tutorials may still link to GitHub; treat those as informat
 - `patterns/` — `.tidal` files. One file per piece, experiment, or exercise.
 - `coding-dj-sandbox.cabal` (workspace root) — Minimal cabal package that depends on `tidal`,
   keeping the library repo-scoped (built into `dist-newstyle/` and the shared cabal store) instead of a user-global GHC environment.
-- `BootTidal.hs` (workspace root, committed) — Tidal boot script piped into the REPL.
+- `BootTidal.hs` (workspace root, committed) — Tidal boot script piped into the REPL.  
   Everything above its trailing `-- Local additions` marker is a verbatim copy of the file shipped with the current Tidal release;
-  local customization (aliases, latency, imports from `src/`) goes below the marker, so an upgrade only has to diff the part above it.
+  local customization (aliases, latency, imports from `src/`) goes below the marker, so an upgrade only has to diff the part above it.  
   The VS Code extension resolves the boot file as:
   `tidalcycles.bootTidalPath` setting → `BootTidal.hs` at the workspace root (auto-detected) → `ghc-pkg` fallback (which cannot see store-based cabal builds — keep the root file).
 - `boot/ghci` — Wrapper that the `tidalcycles.ghciPath` setting points at;
-  it cds to the repo root and launches `cabal repl`, because the extension spawns the REPL without setting a working directory.
+  it cds to the repo root and launches `cabal repl`, because the extension spawns the REPL without setting a working directory.  
   It must be named `ghci`: the extension treats the setting as the location of a `ghci` binary and appends `/ghci` to any other path.
 - `.vscode/settings.example.json` — Template for the git-ignored `.vscode/settings.json`;
   it carries the shared settings (including the `*.tidal` → `haskell` association the extension needs to activate) plus a placeholder `tidalcycles.ghciPath`, which is machine-specific.
 - `hie.yaml` (workspace root) — hie-bios config for HLS: `src/` is loaded through cabal, while `patterns/` and `BootTidal.hs` get a `none` cradle so HLS ignores them instead of reporting errors.
-- `src/<Module>.hs` — Additional Haskell helper modules, imported from `BootTidal.hs` (e.g. `src/MyHelpers.hs`).
+- `src/<Module>.hs` — Additional Haskell helper modules, imported from `BootTidal.hs` (e.g. `src/MyHelpers.hs`).  
   Register each one under `exposed-modules` in `coding-dj-sandbox.cabal` so the REPL and HLS both see them;
   until the first module exists, `cabal repl` prints `Warning: No exposed modules`, which is expected.
 - `docs/setup.md` — Environment setup guide.
 
 ## File Conventions
 
-- Tidal patterns use the `.tidal` extension.
+- Tidal patterns use the `.tidal` extension.  
   VS Code maps `*.tidal` to the `haskell` language via `.vscode/settings.json`; that mapping is what activates the Tidal extension and provides highlighting, while the extension's keybindings are enabled by the `.tidal` extension itself.
-- `.tidal` files live under `patterns/`. One artistic idea per file.
+- `.tidal` files live under `patterns/`. One artistic idea per file.  
   Iterate inside the file, including through commented-out variants, rather than spawning new files for tiny tweaks.
-- Haskell utility modules use `.hs` and live under `src/`, the cabal library's `hs-source-dirs`.
+- Haskell utility modules use `.hs` and live under `src/`, the cabal library's `hs-source-dirs`.  
   Register them under `exposed-modules` in `coding-dj-sandbox.cabal`;
   `cabal repl` then loads them, so `BootTidal.hs` can import them without `-i` flags.
 
@@ -98,27 +98,27 @@ ghc --version
 cabal --version
 ```
 
-SuperCollider startup, the SuperDirt boot block, and the VS Code evaluate flow (`Shift+Enter` one statement, `Ctrl+Enter` multiple lines, `Ctrl+Alt+H` hush) are GUI / IDE workflows.
+SuperCollider startup, the SuperDirt boot block, and the VS Code evaluate flow (`Shift+Enter` one statement, `Ctrl+Enter` multiple lines, `Ctrl+Alt+H` hush) are GUI / IDE workflows.  
 Do not script them or recommend automating them.
 
 ## Workflow Rules
 
 - Do not hardcode upstream or toolchain versions in committed docs;
-  point to the source that manages them (Codeberg releases, Tidal release notes, `ghc --version` / `cabal --version`) instead.
+  point to the source that manages them (Codeberg releases, Tidal release notes, `ghc --version` / `cabal --version`) instead.  
   The dependency bounds in `coding-dj-sandbox.cabal` (`base`, `tidal`) are the exception: they declare compatibility, and the comments there explain each bound.
 - Before suggesting an installation or upgrade step that touches SuperDirt Quarks,
   check the current Tidal release notes on Codeberg and the minimum SuperDirt version Tidal prints when its stream starts (`Waiting for SuperDirt (v.x.y.z or higher)`);
   the release notes alone may not state it.
-- When suggesting Haskell that goes into `BootTidal.hs` or imported helper modules under `src/`, target the GHC that GHCup has installed (check `ghc --version`).
-  Do not assume language features from newer GHC releases unless explicitly approved.
+- When suggesting Haskell that goes into `BootTidal.hs` or imported helper modules under `src/`, target the GHC that GHCup has installed (check `ghc --version`).  
+  Do not assume language features from newer GHC releases unless explicitly approved.  
   The cabal library sets `default-language: GHC2021`, so its extensions are already on in `src/` modules; do not add redundant `LANGUAGE` pragmas.
 - Examples found online are often in Strudel syntax; translate them to TidalCycles unless the user asked for Strudel.
-- Machine-specific values (absolute paths, `~/...`, hostnames) never go into tracked files.
+- Machine-specific values (absolute paths, `~/...`, hostnames) never go into tracked files.  
   They belong in the git-ignored `.vscode/settings.json` or in VS Code user settings; tracked files carry placeholders (see `.vscode/settings.example.json`).
-- HLS diagnostics on `.tidal` files or `BootTidal.hs` are noise, not bugs: those files are not Haskell modules, and `hie.yaml` tells HLS to ignore them.
+- HLS diagnostics on `.tidal` files or `BootTidal.hs` are noise, not bugs: those files are not Haskell modules, and `hie.yaml` tells HLS to ignore them.  
   Do not rewrite a pattern or the boot file to satisfy HLS.
-- For Tidal-specific documentation lookups, prefer direct web fetches from <https://tidalcycles.org> and <https://codeberg.org/uzu/tidal> over Context7.
-  Context7 indexes from GitHub; the active Tidal sources are on Codeberg and may be missing or outdated in the Context7 index.
+- For Tidal-specific documentation lookups, prefer direct web fetches from <https://tidalcycles.org> and <https://codeberg.org/uzu/tidal> over Context7.  
+  Context7 indexes from GitHub; the active Tidal sources are on Codeberg and may be missing or outdated in the Context7 index.  
   Use Context7 freely for non-Tidal libraries (general Haskell ecosystem packages such as `text`, `aeson`, `mtl`, etc.).
 
 ## Style Rules

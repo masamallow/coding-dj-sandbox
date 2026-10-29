@@ -4,9 +4,9 @@ Step-by-step setup for this sandbox on macOS (Apple Silicon), from a fresh machi
 
 Conventions used below:
 
-- Steps marked `[GUI]` are performed manually in the SuperCollider IDE or VS Code.
+- Steps marked `[GUI]` are performed manually in the SuperCollider IDE or VS Code.  
   Per [AGENTS.md](../AGENTS.md), these flows are never scripted or automated.
-- No tool versions are pinned in this document.
+- No tool versions are pinned in this document.  
   Check the sources that manage them instead:
   [Tidal releases](https://codeberg.org/uzu/tidal/releases),
   [SuperDirt](https://codeberg.org/musikinformatik/SuperDirt),
@@ -15,15 +15,15 @@ Conventions used below:
 
 ## How the pieces fit
 
-SuperCollider (with the SuperDirt quark) is the audio engine; it listens for OSC messages.
+SuperCollider (with the SuperDirt quark) is the audio engine; it listens for OSC messages.  
 The `tidal` Haskell library runs inside a GHCi REPL started by the VS Code extension and sends those messages when you evaluate patterns.
 
-This repository is a minimal cabal package ([coding-dj-sandbox.cabal](../coding-dj-sandbox.cabal)) whose job is to depend on `tidal` and to compile helper modules under `src/`.
+This repository is a minimal cabal package ([coding-dj-sandbox.cabal](../coding-dj-sandbox.cabal)) whose job is to depend on `tidal` and to compile helper modules under `src/`.  
 With cabal's Nix-style local builds, the dependency stays repo-scoped:
-the build plan lives in `dist-newstyle/` (gitignored) and compiled packages live in the shared cabal store (`~/.cabal/store`).
+the build plan lives in `dist-newstyle/` (gitignored) and compiled packages live in the shared cabal store (`~/.cabal/store`).  
 Nothing is written to the user-global GHC environment, so other Haskell projects are unaffected.
 
-GHC and cabal themselves are managed by [GHCup](https://www.haskell.org/ghcup/), the de-facto Haskell toolchain manager.
+GHC and cabal themselves are managed by [GHCup](https://www.haskell.org/ghcup/), the de-facto Haskell toolchain manager.  
 mise is deliberately not used for Haskell: its registry has no entries for GHC or GHCup.
 
 ## 1. Prerequisites
@@ -50,12 +50,12 @@ VS Code should have the extensions recommended by [.vscode/extensions.json](../.
 brew install --cask supercollider
 ```
 
-`[GUI]` Launch SuperCollider.app once (approve the Gatekeeper dialog if shown).
+`[GUI]` Launch SuperCollider.app once (approve the Gatekeeper dialog if shown).  
 The post window should report the class library compiled without errors, and `~/Library/Application Support/SuperCollider/` is created.
 
 ## 3. sc3-plugins (optional, recommended)
 
-Many SuperDirt effect UGens need sc3-plugins.
+Many SuperDirt effect UGens need sc3-plugins.  
 Download the macOS universal build from the [releases page](https://github.com/supercollider/sc3-plugins/releases), unzip it, and copy the plugins folder into the SuperCollider extensions directory:
 
 ```sh
@@ -79,11 +79,11 @@ xattr -dr com.apple.quarantine "$HOME/Library/Application Support/SuperCollider/
 include("SuperDirt")
 ```
 
-This installs the SuperDirt quark plus the Dirt-Samples library and recompiles the class library.
+This installs the SuperDirt quark plus the Dirt-Samples library and recompiles the class library.  
 The first run downloads a large sample set; give it several minutes and watch the post window.
 
-The active SuperDirt repository is <https://codeberg.org/musikinformatik/SuperDirt>; the GitHub repository is archived.
-The Quarks directory now points at the Codeberg repository, so a fresh install clones from there; an install made before the move may still track the archived GitHub clone — check the source in the Quarks GUI before updating.
+The active SuperDirt repository is <https://codeberg.org/musikinformatik/SuperDirt>; the GitHub repository is archived.  
+The Quarks directory now points at the Codeberg repository, so a fresh install clones from there; an install made before the move may still track the archived GitHub clone — check the source in the Quarks GUI before updating.  
 Before upgrading SuperDirt, check whether the current Tidal release notes require a particular version.
 
 ## 5. Tidal library (repo-scoped cabal build)
@@ -108,19 +108,19 @@ Plain `ghci` outside `cabal repl` will not see `tidal` — that is by design; th
 
 ## 6. BootTidal.hs
 
-[BootTidal.hs](../BootTidal.hs) at the repo root is the GHCi boot script the editor pipes into the REPL; it imports Tidal and starts the stream.
+[BootTidal.hs](../BootTidal.hs) at the repo root is the GHCi boot script the editor pipes into the REPL; it imports Tidal and starts the stream.  
 Everything above its trailing `-- Local additions` marker is a verbatim copy of the file shipped with the current Tidal release, committed so the VS Code extension finds it deterministically:
-the extension resolves the boot file as `tidalcycles.bootTidalPath` setting → workspace-root `BootTidal.hs` → a `ghc-pkg` fallback that cannot see store-based cabal builds.
-It is a GHCi script (note the `:set` lines), not a Haskell module, so Ormolu/HLint do not apply, and [hie.yaml](../hie.yaml) keeps the Haskell Language Server from loading it.
+the extension resolves the boot file as `tidalcycles.bootTidalPath` setting → workspace-root `BootTidal.hs` → a `ghc-pkg` fallback that cannot see store-based cabal builds.  
+It is a GHCi script (note the `:set` lines), not a Haskell module, so Ormolu/HLint do not apply, and [hie.yaml](../hie.yaml) keeps the Haskell Language Server from loading it.  
 Put local customization (aliases, latency, Link sync, imports from `src/`) below the marker, so an upgrade only has to diff the part above it.
 
 ## 7. VS Code wiring
 
-The Tidal extension spawns the REPL through `/bin/sh` without setting a working directory, so on its own it cannot find this cabal project.
-[boot/ghci](../boot/ghci) fixes that: it puts the GHCup toolchain on PATH, changes to the repo root, and launches `cabal repl`.
+The Tidal extension spawns the REPL through `/bin/sh` without setting a working directory, so on its own it cannot find this cabal project.  
+[boot/ghci](../boot/ghci) fixes that: it puts the GHCup toolchain on PATH, changes to the repo root, and launches `cabal repl`.  
 The wrapper must be named `ghci`: the extension treats `tidalcycles.ghciPath` as the location of a `ghci` binary and appends `/ghci` to any other path.
 
-`.vscode/settings.json` is git-ignored because `tidalcycles.ghciPath` is machine-specific.
+`.vscode/settings.json` is git-ignored because `tidalcycles.ghciPath` is machine-specific.  
 Create it from the committed template and point `tidalcycles.ghciPath` at the wrapper (a leading `~` is expanded by the extension):
 
 ```sh
@@ -128,14 +128,14 @@ cp .vscode/settings.example.json .vscode/settings.json
 # then edit tidalcycles.ghciPath to <this repo>/boot/ghci
 ```
 
-The template also carries the `*.tidal` → `haskell` file association, which the extension needs: it activates only when a Haskell-language file is opened.
+The template also carries the `*.tidal` → `haskell` file association, which the extension needs: it activates only when a Haskell-language file is opened.  
 When you change a setting that should apply on every machine, update the template as well.
 
 Open this repository directly as the (first) workspace folder;
 the extension resolves `BootTidal.hs` against the first workspace folder only.
 
 > [!NOTE]
-> The Tidal extension sees little upstream activity: as of 2026-10 it has had no release since 2025-05, and the official Tidal tutorial assumes the Pulsar editor.
+> The Tidal extension sees little upstream activity: as of 2026-10 it has had no release since 2025-05, and the official Tidal tutorial assumes the Pulsar editor.  
 > It works with the current Tidal release, but check the [Marketplace page](https://marketplace.visualstudio.com/items?itemName=tidalcycles.vscode-tidalcycles) and the [editor docs](https://tidalcycles.org/docs/getting-started/editor/) before relying on newer features.
 
 Default keybindings of the extension:
@@ -155,7 +155,7 @@ Required by [.claude/rules/haskell-style.md](../.claude/rules/haskell-style.md) 
 cabal install ormolu hlint
 ```
 
-This compiles for a while and installs binaries into `~/.cabal/bin` (on PATH via GHCup's shell setup).
+This compiles for a while and installs binaries into `~/.cabal/bin` (on PATH via GHCup's shell setup).  
 When re-installing after an upgrade, add `--overwrite-policy=always`.
 
 ## 9. Smoke test
@@ -167,14 +167,14 @@ When re-installing after an upgrade, add `--overwrite-policy=always`.
    d1 $ sound "bd sn"
    ```
 
-3. You should hear a kick/snare loop.
+3. You should hear a kick/snare loop.  
    Silence it with `hush` (or `Ctrl+Alt+H`).
 
 ## 10. Maintenance
 
 - New Tidal release (watch [Codeberg releases](https://codeberg.org/uzu/tidal/releases)):
-  run `cabal update && cabal build` from the repo root.
-  If the solver keeps an old version, delete `dist-newstyle/` and build again.
+  run `cabal update && cabal build` from the repo root.  
+  If the solver keeps an old version, delete `dist-newstyle/` and build again.  
   Afterwards, diff the part of `BootTidal.hs` above the `-- Local additions` marker against the copy shipped with the new release and merge upstream changes.
 - GHC upgrade (via `ghcup`): re-run `cabal build`; the store is per-GHC-version, so the first build recompiles dependencies.
 - SuperDirt / Dirt-Samples updates: `[GUI]` via the Quarks GUI in the SC IDE.
@@ -182,8 +182,8 @@ When re-installing after an upgrade, add `--overwrite-policy=always`.
 ## Troubleshooting
 
 - No sound: confirm `SuperDirt.start` ran in the SC IDE and the post window shows it is listening; re-evaluate the pattern.
-- REPL fails to boot from VS Code: check the TidalCycles output channel.
-  If `cabal` is not found, the wrapper's PATH prepend should cover it — confirm `tidalcycles.ghciPath` points at [boot/ghci](../boot/ghci) and the script is executable.
+- REPL fails to boot from VS Code: check the TidalCycles output channel.  
+  If `cabal` is not found, the wrapper's PATH prepend should cover it — confirm `tidalcycles.ghciPath` points at [boot/ghci](../boot/ghci) and the script is executable.  
   A `Not a directory` error means the setting points at a file not named `ghci`; the extension appends `/ghci` to it.
 - `import Sound.Tidal.Context` fails in a terminal: run `cabal repl` from the repo root; plain `ghci` does not see project dependencies (by design).
 - "cannot be opened" dialogs for sc3-plugins: run the `xattr` command from step 3 and recompile the class library.
@@ -193,7 +193,7 @@ When re-installing after an upgrade, add `--overwrite-policy=always`.
 
 ## Appendix: global install (upstream docs approach)
 
-The upstream Tidal docs install the library user-globally instead.
+The upstream Tidal docs install the library user-globally instead.  
 The macOS page uses `cabal v1-install tidal` (or the `tidal-bootstrap` script, which runs the same command); the Linux page uses `cabal install tidal --lib`:
 
 ```sh
@@ -201,6 +201,6 @@ cabal update
 cabal v1-install tidal
 ```
 
-Either form registers `tidal` where every plain `ghci` picks it up (the v1 user package database, or a user-global GHC environment file under `~/.ghc/<platform>/environments/`), with no wrapper or project file needed.
-It is simpler, but it leaks into all other Haskell work on the machine, and repeated `--lib` installs can leave the environment file inconsistent (recovery: delete it and re-run a single install listing all needed libraries).
+Either form registers `tidal` where every plain `ghci` picks it up (the v1 user package database, or a user-global GHC environment file under `~/.ghc/<platform>/environments/`), with no wrapper or project file needed.  
+It is simpler, but it leaks into all other Haskell work on the machine, and repeated `--lib` installs can leave the environment file inconsistent (recovery: delete it and re-run a single install listing all needed libraries).  
 This repo intentionally uses the cabal-project approach above instead.
