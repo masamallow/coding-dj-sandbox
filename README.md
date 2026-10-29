@@ -76,5 +76,5 @@ The archived GitHub repos remain readable but receive no updates.
 
 ## License
 
-This is a personal sandbox; no license file.
+Not yet licensed (MIT planned); to be decided before publishing.
 Patterns and Haskell snippets inside may incorporate ideas from the Tidal community — credit upstream when copying non-trivial work.
