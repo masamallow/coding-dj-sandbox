@@ -16,6 +16,8 @@ Assume strong general programming fundamentals; do not assume Haskell or DSP kno
 - **Live coding language**: TidalCycles (Haskell DSL for pattern-oriented music)
 - **Audio engine**: SuperCollider + SuperDirt (`sclang` / `scsynth`)
 - **Editor**: VS Code with the `tidalcycles.vscode-tidalcycles` extension
+  (low upstream activity: as of 2026-10 no release since 2025-05, and the official tutorials assume Pulsar;
+  do not assume features beyond what the installed version documents).
 - **Haskell toolchain**: GHC and cabal via GHCup (`ghc --version` / `cabal --version` show the active toolchain)
 - **OS**: macOS on Apple Silicon (M3 Pro, 36 GB)
 

@@ -133,6 +133,10 @@ When you change a setting that should apply on every machine, update the templat
 Open this repository directly as the (first) workspace folder;
 the extension resolves `BootTidal.hs` against the first workspace folder only.
 
+> [!NOTE]
+> The Tidal extension sees little upstream activity: as of 2026-10 it has had no release since 2025-05, and the official Tidal tutorial assumes the Pulsar editor.
+> It works with the current Tidal release, but check the [Marketplace page](https://marketplace.visualstudio.com/items?itemName=tidalcycles.vscode-tidalcycles) and the [editor docs](https://tidalcycles.org/docs/getting-started/editor/) before relying on newer features.
+
 Default keybindings of the extension:
 
 - `Shift+Enter` — evaluate the current statement

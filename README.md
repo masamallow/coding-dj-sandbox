@@ -35,6 +35,10 @@ VS Code wiring: copy `.vscode/settings.example.json` to the git-ignored `.vscode
     Formatting and linting policy is delegated to these tools (see `.claude/rules/haskell-style.md`).
 - HLint CLI (optional, useful outside HLS): `cabal install hlint`.
 
+> [!NOTE]
+> The Tidal extension sees little upstream activity: as of 2026-10 it has had no release since 2025-05, and the official Tidal tutorial assumes the Pulsar editor.
+> It works with the current Tidal release, but check the [Marketplace page][vscode-tidal] and the [editor docs](https://tidalcycles.org/docs/getting-started/editor/) before relying on newer features.
+
 [GHCup]: https://www.haskell.org/ghcup/
 [SuperCollider]: https://supercollider.github.io/
 [vscode-tidal]: https://marketplace.visualstudio.com/items?itemName=tidalcycles.vscode-tidalcycles
