@@ -1,0 +1,10 @@
+#!/bin/sh
+# GHCi launcher for the VS Code Tidal extension; point `tidalcycles.ghciPath` here.
+# The extension treats that setting as the location of a `ghci` binary
+# (it strips a trailing "ghci" and re-appends "/ghci"), so this wrapper must be named ghci.
+# It also spawns the REPL via /bin/sh without a working directory, so cd to the
+# repo root (cabal needs the project context) and make sure the GHCup toolchain
+# is on PATH even when VS Code is Dock-launched.
+PATH="$HOME/.ghcup/bin:$HOME/.cabal/bin:$PATH"
+export PATH
+cd "$(dirname "$0")/.." && exec cabal repl "$@"

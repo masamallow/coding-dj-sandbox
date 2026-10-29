@@ -116,8 +116,19 @@ Customize it here (aliases, latency, Link sync) as needed.
 ## 7. VS Code wiring
 
 The Tidal extension spawns the REPL through `/bin/sh` without setting a working directory, so on its own it cannot find this cabal project.
-[boot/tidal-repl.sh](../boot/tidal-repl.sh) fixes that: it puts the GHCup toolchain on PATH, changes to the repo root, and launches `cabal repl`.
-[.vscode/settings.json](../.vscode/settings.json) points `tidalcycles.ghciPath` at that wrapper; adjust the path if the repo lives elsewhere on your machine.
+[boot/ghci](../boot/ghci) fixes that: it puts the GHCup toolchain on PATH, changes to the repo root, and launches `cabal repl`.
+The wrapper must be named `ghci`: the extension treats `tidalcycles.ghciPath` as the location of a `ghci` binary and appends `/ghci` to any other path.
+
+`.vscode/settings.json` is git-ignored because `tidalcycles.ghciPath` is machine-specific.
+Create it from the committed template and point `tidalcycles.ghciPath` at the wrapper (a leading `~` is expanded by the extension):
+
+```sh
+cp .vscode/settings.example.json .vscode/settings.json
+# then edit tidalcycles.ghciPath to <this repo>/boot/ghci
+```
+
+The template also carries the `*.tidal` → `haskell` file association, which the extension needs: it activates only when a Haskell-language file is opened.
+When you change a setting that should apply on every machine, update the template as well.
 
 Open this repository directly as the (first) workspace folder;
 the extension resolves `BootTidal.hs` against the first workspace folder only.
@@ -164,7 +175,8 @@ When re-installing after an upgrade, add `--overwrite-policy=always`.
 
 - No sound: confirm `SuperDirt.start` ran in the SC IDE and the post window shows it is listening; re-evaluate the pattern.
 - REPL fails to boot from VS Code: check the TidalCycles output channel.
-  If `cabal` is not found, the wrapper's PATH prepend should cover it — confirm `tidalcycles.ghciPath` points at [boot/tidal-repl.sh](../boot/tidal-repl.sh) and the script is executable.
+  If `cabal` is not found, the wrapper's PATH prepend should cover it — confirm `tidalcycles.ghciPath` points at [boot/ghci](../boot/ghci) and the script is executable.
+  A `Not a directory` error means the setting points at a file not named `ghci`; the extension appends `/ghci` to it.
 - `import Sound.Tidal.Context` fails in a terminal: run `cabal repl` from the repo root; plain `ghci` does not see project dependencies (by design).
 - "cannot be opened" dialogs for sc3-plugins: run the `xattr` command from step 3 and recompile the class library.
 - First server boot may trigger a macOS microphone-permission prompt (the server opens input buses); allow or deny — playback works either way.

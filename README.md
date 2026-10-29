@@ -8,10 +8,11 @@ Haskell is a parallel learning track via the Tidal Haskell library.
 ```text
 .
 ├── patterns/                 # *.tidal files (live-coding patterns)
-├── boot/tidal-repl.sh        # REPL wrapper used by the VS Code extension
+├── boot/ghci                 # REPL wrapper (cabal repl) spawned by the VS Code extension
 ├── docs/setup.md             # environment setup guide
 ├── BootTidal.hs              # Tidal boot script piped into the REPL
 ├── coding-dj-sandbox.cabal   # minimal cabal package depending on tidal
+├── .vscode/settings.example.json   # template for the git-ignored .vscode/settings.json
 ├── *.hs                      # (optional) helper Haskell modules at root
 └── README.md
 ```
@@ -19,6 +20,8 @@ Haskell is a parallel learning track via the Tidal Haskell library.
 `BootTidal.hs` is a verbatim copy of the boot file shipped with the current Tidal release;
 the VS Code extension auto-detects it at the workspace root (no extra setting needed), and it is the place for local customization.
 Helper modules (e.g. `MyHelpers.hs`) live at the workspace root and are registered under `exposed-modules` in `coding-dj-sandbox.cabal` so both the REPL and HLS see them.
+VS Code wiring: copy `.vscode/settings.example.json` to the git-ignored `.vscode/settings.json` and point `tidalcycles.ghciPath` at `boot/ghci`
+(see [docs/setup.md](./docs/setup.md#7-vs-code-wiring)).
 
 ## Prerequisites
 

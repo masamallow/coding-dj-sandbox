@@ -27,3 +27,8 @@ cabal.project.local~
 .ghc.environment.*
 
 # End of https://www.toptal.com/developers/gitignore/api/haskell
+
+### VS Code ###
+# settings.json holds a machine-specific value (tidalcycles.ghciPath);
+# create it from .vscode/settings.example.json (see docs/setup.md).
+.vscode/settings.json

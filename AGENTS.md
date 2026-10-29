@@ -47,8 +47,11 @@ Older blog posts and tutorials may still link to GitHub; treat those as informat
   a verbatim copy of the file shipped with the current Tidal release, customizable locally.
   The VS Code extension resolves the boot file as:
   `tidalcycles.bootTidalPath` setting → `BootTidal.hs` at the workspace root (auto-detected) → `ghc-pkg` fallback (which cannot see store-based cabal builds — keep the root file).
-- `boot/tidal-repl.sh` — Wrapper that the `tidalcycles.ghciPath` setting points at;
+- `boot/ghci` — Wrapper that the `tidalcycles.ghciPath` setting points at;
   it cds to the repo root and launches `cabal repl`, because the extension spawns the REPL without setting a working directory.
+  It must be named `ghci`: the extension treats the setting as the location of a `ghci` binary and appends `/ghci` to any other path.
+- `.vscode/settings.example.json` — Template for the git-ignored `.vscode/settings.json`;
+  it carries the shared settings (including the `*.tidal` → `haskell` association the extension needs to activate) plus a placeholder `tidalcycles.ghciPath`, which is machine-specific.
 - `<Module>.hs` (workspace root) — Additional Haskell helper modules, imported from `BootTidal.hs` (e.g. `MyHelpers.hs`).
   Keep flat at root and register them under `exposed-modules` in `coding-dj-sandbox.cabal` so the REPL and HLS both see them.
 - `docs/setup.md` — Environment setup guide.

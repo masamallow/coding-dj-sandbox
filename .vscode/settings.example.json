@@ -1,0 +1,13 @@
+{
+  "files.associations": {
+    "*.tidal": "haskell",
+    "BootTidal.hs": "haskell"
+  },
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "tidalcycles.ghciPath": "~/path/to/coding-dj-sandbox/boot/ghci",
+  "[haskell]": {
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true
+  }
+}
