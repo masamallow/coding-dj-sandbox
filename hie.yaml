@@ -1,0 +1,17 @@
+# hie-bios config for the Haskell Language Server: src/ is loaded through cabal;
+# patterns/ (.tidal fragments) and BootTidal.hs (a GHCi script) are not Haskell
+# modules, so HLS ignores them instead of reporting errors.
+cradle:
+  multi:
+    - path: "./patterns"
+      config:
+        cradle:
+          none:
+    - path: "./BootTidal.hs"
+      config:
+        cradle:
+          none:
+    - path: "./"
+      config:
+        cradle:
+          cabal:

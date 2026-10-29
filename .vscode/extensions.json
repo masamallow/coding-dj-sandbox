@@ -2,6 +2,6 @@
   "recommendations": [
     "tidalcycles.vscode-tidalcycles",
     "haskell.haskell",
-    "justusadam.language-haskell"
+    "haskell.language-haskell"
   ]
 }
