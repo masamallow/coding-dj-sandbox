@@ -52,6 +52,11 @@ Older blog posts and tutorials may still link to GitHub; treat those as informat
 - `boot/ghci` — Wrapper that the `tidalcycles.ghciPath` setting points at;
   it cds to the repo root and launches `cabal repl`, because the extension spawns the REPL without setting a working directory.  
   It must be named `ghci`: the extension treats the setting as the location of a `ghci` binary and appends `/ghci` to any other path.
+- `boot/superdirt_startup.scd` — SuperCollider startup file for the SuperDirt side: boots the server and starts SuperDirt with this repository's settings.  
+  It is adapted from the example shipped with the SuperDirt quark; lines marked `local:` are the deviations, so an upgrade only has to diff against the new example.  
+  It is evaluated in the SuperCollider IDE, or run on launch by a `load("<absolute path>")` line in the user's `startup.scd` (that line stays outside the repo).
+- `boot/quarks.txt` — The SuperCollider Quarks this setup needs (SuperDirt pinned to a release tag, plus its dependencies), in the `localPath=url[@refspec]` format that `Quarks.save` writes and `Quarks.load` reads.  
+  The file allows no comments or blank lines; its `~/Library/Application Support/SuperCollider/...` entries are SuperCollider's fixed per-user quark folder, not a location of this repo.
 - `.vscode/settings.example.json` — Template for the git-ignored `.vscode/settings.json`;
   it carries the shared settings (including the `*.tidal` → `haskell` association the extension needs to activate) plus a placeholder `tidalcycles.ghciPath`, which is machine-specific.
 - `hie.yaml` (workspace root) — hie-bios config for HLS: `src/` is loaded through cabal, while `patterns/` and `BootTidal.hs` get a `none` cradle so HLS ignores them instead of reporting errors.
@@ -69,6 +74,8 @@ Older blog posts and tutorials may still link to GitHub; treat those as informat
 - Haskell utility modules use `.hs` and live under `src/`, the cabal library's `hs-source-dirs`.  
   Register them under `exposed-modules` in `coding-dj-sandbox.cabal`;
   `cabal repl` then loads them, so `BootTidal.hs` can import them without `-i` flags.
+- SuperCollider files use `.scd` and live under `boot/`, which holds the start-up pieces of both engines.  
+  Keep `boot/superdirt_startup.scd` close to the upstream example and mark every deviation with a `local:` comment.
 
 ## Common Commands
 
@@ -98,23 +105,37 @@ ghc --version
 cabal --version
 ```
 
-SuperCollider startup, the SuperDirt boot block, and the VS Code evaluate flow (`Shift+Enter` one statement, `Ctrl+Enter` multiple lines, `Ctrl+Alt+H` hush) are GUI / IDE workflows.  
-Do not script them or recommend automating them.
+Install or reinstall the SuperCollider Quarks from the committed set (in the SuperCollider IDE, then Language > Recompile Class Library):
+
+```supercollider
+Quarks.load("/absolute/path/to/coding-dj-sandbox/boot/quarks.txt")
+```
+
+`Quarks.load` first clears every installed Quark, so it assumes the machine's SuperCollider is dedicated to this setup.  
+After changing the installed set by other means, regenerate the file with `Quarks.save("/absolute/path/to/coding-dj-sandbox/boot/quarks.txt")` and commit the result.
+
+SuperCollider startup (evaluating `boot/superdirt_startup.scd` in the SC IDE) and the VS Code evaluate flow (`Shift+Enter` one statement, `Ctrl+Enter` multiple lines, `Ctrl+Alt+H` hush) are GUI / IDE workflows:
+never drive `sclang`, `scsynth` or the editor from shell scripts, mise tasks or CI.  
+SuperCollider's own startup mechanism is configuration, not automation: a `load(...)` line in the user's `startup.scd` that points at `boot/superdirt_startup.scd` is fine.
 
 ## Workflow Rules
 
 - Do not hardcode upstream or toolchain versions in committed docs;
   point to the source that manages them (Codeberg releases, Tidal release notes, `ghc --version` / `cabal --version`) instead.  
-  The dependency bounds in `coding-dj-sandbox.cabal` (`base`, `tidal`) are the exception: they declare compatibility, and the comments there explain each bound.
-- Before suggesting an installation or upgrade step that touches SuperDirt Quarks,
+  The dependency bounds in `coding-dj-sandbox.cabal` (`base`, `tidal`) and the SuperDirt refspec in `boot/quarks.txt` are the exceptions: they declare compatibility, and the cabal comments explain each bound.
+- Before bumping the SuperDirt refspec in `boot/quarks.txt` or suggesting any step that touches SuperDirt Quarks,
   check the current Tidal release notes on Codeberg and the minimum SuperDirt version Tidal prints when its stream starts (`Waiting for SuperDirt (v.x.y.z or higher)`);
-  the release notes alone may not state it.
+  the release notes alone may not state it.  
+  After a bump, `Quarks.load` the file again, recompile, and diff `boot/superdirt_startup.scd` against the new upstream example.
+- sc3-plugins is a per-machine install into SuperCollider's `Extensions/` folder (see `docs/setup.md`); it cannot be declared in `.scd` files or in `boot/quarks.txt`.  
+  SuperDirt treats it as optional and warns `sc3plugins are necessary and missing` when it is absent.
 - When suggesting Haskell that goes into `BootTidal.hs` or imported helper modules under `src/`, target the GHC that GHCup has installed (check `ghc --version`).  
   Do not assume language features from newer GHC releases unless explicitly approved.  
   The cabal library sets `default-language: GHC2021`, so its extensions are already on in `src/` modules; do not add redundant `LANGUAGE` pragmas.
 - Examples found online are often in Strudel syntax; translate them to TidalCycles unless the user asked for Strudel.
-- Machine-specific values (absolute paths, `~/...`, hostnames) never go into tracked files.  
-  They belong in the git-ignored `.vscode/settings.json` or in VS Code user settings; tracked files carry placeholders (see `.vscode/settings.example.json`).
+- Machine-specific values (absolute paths, `~/...` paths of this repo, hostnames) never go into tracked files.  
+  They belong in the git-ignored `.vscode/settings.json`, in VS Code user settings, or in the user's SuperCollider `startup.scd`; tracked files carry placeholders (see `.vscode/settings.example.json`).  
+  The `~/Library/Application Support/SuperCollider/...` entries in `boot/quarks.txt` are not machine-specific: that is SuperCollider's fixed per-user quark folder, written by `Quarks.save`.
 - HLS diagnostics on `.tidal` files or `BootTidal.hs` are noise, not bugs: those files are not Haskell modules, and `hie.yaml` tells HLS to ignore them.  
   Do not rewrite a pattern or the boot file to satisfy HLS.
 - For Tidal-specific documentation lookups, prefer direct web fetches from <https://tidalcycles.org> and <https://codeberg.org/uzu/tidal> over Context7.  

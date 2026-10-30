@@ -36,6 +36,8 @@ Patterns and examples default to TidalCycles.
 ├── patterns/                 # *.tidal files (live-coding patterns), one idea per file
 ├── src/*.hs                  # (optional) helper Haskell modules, registered in the cabal file
 ├── boot/ghci                 # REPL wrapper (cabal repl) spawned by the VS Code extension
+├── boot/superdirt_startup.scd   # SuperCollider startup file: boots the server and starts SuperDirt
+├── boot/quarks.txt           # SuperCollider Quarks to install (SuperDirt pinned to a release, plus dependencies)
 ├── docs/setup.md             # environment setup guide
 ├── BootTidal.hs              # Tidal boot script piped into the REPL
 ├── coding-dj-sandbox.cabal   # minimal cabal package depending on tidal
@@ -47,13 +49,14 @@ Patterns and examples default to TidalCycles.
 
 `BootTidal.hs` is the boot file shipped with the current Tidal release;
 the VS Code extension auto-detects it at the workspace root, and local additions go below the `-- Local additions` marker at its end so upgrades diff cleanly.  
-Helper modules (e.g. `src/MyHelpers.hs`) are registered under `exposed-modules` in `coding-dj-sandbox.cabal` so both the REPL and HLS see them.
+Helper modules (e.g. `src/MyHelpers.hs`) are registered under `exposed-modules` in `coding-dj-sandbox.cabal` so both the REPL and HLS see them.  
+`boot/` holds the start-up pieces of both engines: `boot/ghci` for the Tidal REPL, and `boot/superdirt_startup.scd` plus `boot/quarks.txt` for the SuperCollider side (the startup file stays close to the upstream example, with deviations marked `local:`).
 
 ## ✅ Prerequisites
 
 - macOS (tested on Apple Silicon).
 - Haskell toolchain via [GHCup]: GHC and cabal (versions are managed by GHCup, not pinned in this repo).
-- [SuperCollider] with `sc3-plugins` and the `SuperDirt` Quark.
+- [SuperCollider] with `sc3-plugins`; the `SuperDirt` Quark and its dependencies are installed from `boot/quarks.txt`.
 - VS Code with the extensions recommended in [.vscode/extensions.json](./.vscode/extensions.json):
   - [`tidalcycles.vscode-tidalcycles`][vscode-tidal] for `.tidal` evaluation.
   - [`haskell.haskell`][vscode-haskell] for the Haskell Language Server,
@@ -74,7 +77,13 @@ Helper modules (e.g. `src/MyHelpers.hs`) are registered under `exposed-modules` 
 ## 🚀 Getting started
 
 [docs/setup.md](./docs/setup.md) walks through the whole environment, from SuperCollider and SuperDirt to the VS Code wiring and a smoke test.  
-The repository side comes down to three steps, all from the repo root.
+The repository side comes down to four steps: one in the SuperCollider IDE, three from the repo root.
+
+Install the SuperCollider Quarks from the committed set, then run Language > Recompile Class Library (once per machine; it replaces whatever Quarks were installed before):
+
+```supercollider
+Quarks.load("/absolute/path/to/coding-dj-sandbox/boot/quarks.txt")
+```
 
 Build the repo-scoped Tidal library:
 
@@ -102,7 +111,7 @@ cabal repl
 
 ## 🎛️ Usage
 
-1. Launch SuperCollider and evaluate `SuperDirt.start` in the SC IDE; wait until the post window reports it is listening.
+1. Launch SuperCollider, open `boot/superdirt_startup.scd` in the SC IDE and evaluate it (or have the user `startup.scd` load it); wait until the post window reports `SuperDirt: listening to Tidal on port 57120`.
 2. Open a `.tidal` file under `patterns/` in VS Code.  
    The first evaluation boots Tidal through `boot/ghci` and `BootTidal.hs`.
 3. Evaluate: `Shift+Enter` runs the current statement, `Ctrl+Enter` the blank-line-separated block under the cursor, and `Ctrl+Alt+H` hushes every channel.
@@ -116,7 +125,7 @@ Conventions for channels, mini-notation and comments are in [.claude/rules/tidal
   If the solver keeps an old version, delete `dist-newstyle/` and build again.  
   Then diff the part of `BootTidal.hs` above the `-- Local additions` marker against the copy shipped with the new release.
 - GHC upgrade via `ghcup`: re-run `cabal build`; the store is per GHC version, so the first build recompiles dependencies.
-- SuperDirt and Dirt-Samples updates: through the Quarks GUI in the SC IDE.
+- SuperDirt update: bump the refspec in `boot/quarks.txt`, re-run `Quarks.load` in the SC IDE and recompile, then diff `boot/superdirt_startup.scd` against the new upstream example.
 
 ## 🧭 Scope
 
