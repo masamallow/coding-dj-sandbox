@@ -1,0 +1,3 @@
+~/Library/Application Support/SuperCollider/downloaded-quarks/SuperDirt=https://codeberg.org/musikinformatik/SuperDirt@v1.7.4
+~/Library/Application Support/SuperCollider/downloaded-quarks/Vowel=https://github.com/supercollider-quarks/Vowel
+~/Library/Application Support/SuperCollider/downloaded-quarks/Dirt-Samples=https://github.com/tidalcycles/Dirt-Samples
