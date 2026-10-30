@@ -79,11 +79,8 @@ Helper modules (e.g. `src/MyHelpers.hs`) are registered under `exposed-modules` 
 [docs/setup.md](./docs/setup.md) walks through the whole environment, from SuperCollider and SuperDirt to the VS Code wiring and a smoke test.  
 The repository side comes down to four steps: one in the SuperCollider IDE, three from the repo root.
 
-Install the SuperCollider Quarks from the committed set, then run Language > Recompile Class Library (once per machine; it replaces whatever Quarks were installed before):
-
-```supercollider
-Quarks.load("/absolute/path/to/coding-dj-sandbox/boot/quarks.txt")
-```
+Install the SuperCollider Quarks listed in `boot/quarks.txt` and recompile the class library, once per machine.  
+[docs/setup.md](./docs/setup.md#4-superdirt) has two procedures: `Quarks.load` of the whole set for a SuperCollider dedicated to this repository (it removes every other Quark first), or `Quarks.install` of SuperDirt alone for a shared one.
 
 Build the repo-scoped Tidal library:
 
@@ -125,7 +122,7 @@ Conventions for channels, mini-notation and comments are in [.claude/rules/tidal
   If the solver keeps an old version, delete `dist-newstyle/` and build again.  
   Then diff the part of `BootTidal.hs` above the `-- Local additions` marker against the copy shipped with the new release.
 - GHC upgrade via `ghcup`: re-run `cabal build`; the store is per GHC version, so the first build recompiles dependencies.
-- SuperDirt update: bump the refspec in `boot/quarks.txt`, re-run `Quarks.load` in the SC IDE and recompile, then diff `boot/superdirt_startup.scd` against the new upstream example.
+- SuperDirt update: bump the refspec in `boot/quarks.txt`, re-run the install procedure from [docs/setup.md](./docs/setup.md#4-superdirt) in the SC IDE and recompile, then diff `boot/superdirt_startup.scd` against the new upstream example.
 
 ## 🧭 Scope
 

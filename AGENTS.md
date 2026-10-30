@@ -105,13 +105,18 @@ ghc --version
 cabal --version
 ```
 
-Install or reinstall the SuperCollider Quarks from the committed set (in the SuperCollider IDE, then Language > Recompile Class Library):
+Install the SuperCollider Quarks (in the SuperCollider IDE, then Language > Recompile Class Library); `docs/setup.md` step 4 has the full procedures:
 
 ```supercollider
+// A. SuperCollider dedicated to this setup: load the committed set.
+//    CAUTION: this first removes every installed Quark.
 Quarks.load("/absolute/path/to/coding-dj-sandbox/boot/quarks.txt")
+// B. SuperCollider shared with other projects: install SuperDirt alone,
+//    with the refspec taken from boot/quarks.txt; its dependencies follow.
+Quarks.install("SuperDirt", "<refspec from boot/quarks.txt>")
 ```
 
-`Quarks.load` first clears every installed Quark, so it assumes the machine's SuperCollider is dedicated to this setup.  
+Never suggest procedure A without confirming that the machine's SuperCollider serves only this repository.  
 After changing the installed set by other means, regenerate the file with `Quarks.save("/absolute/path/to/coding-dj-sandbox/boot/quarks.txt")` and commit the result.
 
 SuperCollider startup (evaluating `boot/superdirt_startup.scd` in the SC IDE) and the VS Code evaluate flow (`Shift+Enter` one statement, `Ctrl+Enter` multiple lines, `Ctrl+Alt+H` hush) are GUI / IDE workflows:
@@ -126,7 +131,7 @@ SuperCollider's own startup mechanism is configuration, not automation: a `load(
 - Before bumping the SuperDirt refspec in `boot/quarks.txt` or suggesting any step that touches SuperDirt Quarks,
   check the current Tidal release notes on Codeberg and the minimum SuperDirt version Tidal prints when its stream starts (`Waiting for SuperDirt (v.x.y.z or higher)`);
   the release notes alone may not state it.  
-  After a bump, `Quarks.load` the file again, recompile, and diff `boot/superdirt_startup.scd` against the new upstream example.
+  After a bump, re-run the install procedure (`Quarks.load` on a dedicated SuperCollider, `Quarks.install` with the new refspec otherwise), recompile, and diff `boot/superdirt_startup.scd` against the new upstream example.
 - sc3-plugins is a per-machine install into SuperCollider's `Extensions/` folder (see `docs/setup.md`); it cannot be declared in `.scd` files or in `boot/quarks.txt`.  
   SuperDirt treats it as optional and warns `sc3plugins are necessary and missing` when it is absent.
 - When suggesting Haskell that goes into `BootTidal.hs` or imported helper modules under `src/`, target the GHC that GHCup has installed (check `ghc --version`).  

@@ -80,14 +80,42 @@ SuperDirt treats it as optional: without it the post window warns `sc3plugins ar
 
 ## 4. SuperDirt
 
-`[GUI]` In the SuperCollider IDE, install the Quarks listed in [boot/quarks.txt](../boot/quarks.txt) — SuperDirt pinned to a release tag, plus its dependencies Vowel and Dirt-Samples:
+[boot/quarks.txt](../boot/quarks.txt) lists the Quarks this setup needs: SuperDirt pinned to a release tag, plus its dependencies Vowel and Dirt-Samples.  
+Pick one of the two procedures below, depending on whether this machine's SuperCollider serves only this repository.
+
+<details name="quarks-install" open>
+<summary>A. SuperCollider is dedicated to this setup: load the whole set with <code>Quarks.load</code></summary>
+
+> [!CAUTION]
+> `Quarks.load` first **removes every installed Quark** from the class path and then installs the listed set.  
+> Anything installed for other projects is dropped; if that SuperCollider serves anything else, use procedure B instead.
+
+`[GUI]` In the SuperCollider IDE, evaluate:
 
 ```supercollider
 Quarks.load("/absolute/path/to/coding-dj-sandbox/boot/quarks.txt")
 ```
 
-Then run Language > Recompile Class Library.  
-`Quarks.load` first clears every installed Quark and then installs the listed set, which assumes this machine's SuperCollider is dedicated to this setup.  
+The file format is the one `Quarks.save` writes (`localPath=url[@refspec]`, no comments or blank lines).  
+After changing the installed set by any other means, regenerate it with `Quarks.save("/absolute/path/to/coding-dj-sandbox/boot/quarks.txt")` and commit the result.
+
+</details>
+
+<details name="quarks-install">
+<summary>B. SuperCollider is shared with other projects: install SuperDirt alone with <code>Quarks.install</code></summary>
+
+`[GUI]` In the SuperCollider IDE, evaluate the following with the refspec copied from [boot/quarks.txt](../boot/quarks.txt) (the part after `@` on the SuperDirt line):
+
+```supercollider
+Quarks.install("SuperDirt", "<refspec from boot/quarks.txt>")
+```
+
+Nothing else that is installed is touched.  
+Vowel and Dirt-Samples are declared as dependencies in SuperDirt's quark file and are installed automatically; the same line checks out a new refspec later, so it also serves version bumps.
+
+</details>
+
+Either way, then run Language > Recompile Class Library.  
 The first run clones Dirt-Samples, a large sample library; give it several minutes and watch the post window.
 
 Verify: Language > Quarks should list SuperDirt, Dirt-Samples and Vowel as installed, and the sample folders should be present (the SuperDirt README notes that the unpack sometimes fails silently):
@@ -96,8 +124,7 @@ Verify: Language > Quarks should list SuperDirt, Dirt-Samples and Vowel as insta
 ls "$HOME/Library/Application Support/SuperCollider/downloaded-quarks/Dirt-Samples" | head
 ```
 
-The file format is the one `Quarks.save` writes (`localPath=url[@refspec]`, no comments or blank lines); after changing the installed set by any other means, regenerate it with `Quarks.save("/absolute/path/to/coding-dj-sandbox/boot/quarks.txt")` and commit the result.  
-Upstream documents two other install forms, `include("SuperDirt")` (SuperDirt README; installs the head of the develop branch) and `Quarks.install("SuperDirt", "vX.Y.Z")` (tidalcycles.org macOS page); both work but bypass the pinned set.
+The SuperDirt README also offers `include("SuperDirt")`, which installs the head of the develop branch and bypasses the pin; the tidalcycles.org macOS page uses the `Quarks.install` form of procedure B.
 
 The active SuperDirt repository is <https://codeberg.org/musikinformatik/SuperDirt>; the GitHub repository is archived.  
 The Quarks directory points at the Codeberg repository; an install made before the move may still track the archived GitHub clone — check the source in the Quarks GUI before updating.  
@@ -211,7 +238,7 @@ When re-installing after an upgrade, add `--overwrite-policy=always`.
   If the solver keeps an old version, delete `dist-newstyle/` and build again.  
   Afterwards, diff the part of `BootTidal.hs` above the `-- Local additions` marker against the copy shipped with the new release and merge upstream changes.
 - GHC upgrade (via `ghcup`): re-run `cabal build`; the store is per-GHC-version, so the first build recompiles dependencies.
-- SuperDirt update: bump the refspec in `boot/quarks.txt` after checking the Tidal release notes and the `Waiting for SuperDirt (v.x.y.z or higher)` message, then `[GUI]` re-run `Quarks.load` and recompile (step 4).  
+- SuperDirt update: bump the refspec in `boot/quarks.txt` after checking the Tidal release notes and the `Waiting for SuperDirt (v.x.y.z or higher)` message, then `[GUI]` re-run the install procedure of step 4 (`Quarks.load` on a dedicated SuperCollider, `Quarks.install` with the new refspec otherwise) and recompile.  
   Afterwards diff `boot/superdirt_startup.scd` against the new upstream example and commit both files.  
   Dirt-Samples and Vowel are unpinned and follow their default branches; `[GUI]` `Quarks.update("Dirt-Samples")` in the SC IDE pulls new samples.
 
