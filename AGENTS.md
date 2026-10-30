@@ -131,7 +131,7 @@ SuperCollider's own startup mechanism is configuration, not automation: a `load(
   point to the source that manages them (Codeberg releases, Tidal release notes, `ghc --version` / `cabal --version`) instead.  
   The dependency bounds in `coding-dj-sandbox.cabal` (`base`, `tidal`) and the SuperDirt refspec in `boot/quarks.txt` are the exceptions: they declare compatibility, and the cabal comments explain each bound.
 - Before bumping the SuperDirt refspec in `boot/quarks.txt` or suggesting any step that touches SuperDirt Quarks,
-  check the current Tidal release notes on Codeberg and the minimum SuperDirt version Tidal prints when its stream starts (`Waiting for SuperDirt (v.x.y.z or higher)`);
+  check the current Tidal release notes on Codeberg and the minimum SuperDirt version Tidal prints while it waits for SuperDirt at stream start (a line like `Waiting for SuperDirt (v.x.y.z or higher)`, shown only when Tidal boots before SuperDirt is up);
   the release notes alone may not state it.  
   After a bump, re-run the install procedure (`Quarks.load` on a dedicated SuperCollider, `Quarks.install` with the new refspec otherwise), recompile, and diff `boot/superdirt_startup.scd` against the new upstream example.
 - sc3-plugins is a per-machine install into SuperCollider's `Extensions/` folder (see `docs/setup.md`); it cannot be declared in `.scd` files or in `boot/quarks.txt`.  
@@ -151,6 +151,8 @@ SuperCollider's own startup mechanism is configuration, not automation: a `load(
 - When a step deviates from the upstream documentation because the documented way did not work, or does not hold, for the versions this repository assumes, record it next to the step in `docs/setup.md` as a `NOTE` alert:
   what upstream says (a short quote and a link pinned to a tag or commit), what is done instead, and the date it was checked.  
   Upstream pages get rewritten; the pinned link and the date keep the note verifiable later.
+- Quote program output as an example of its shape, not as an exact expectation: messages change between versions.  
+  Write what the reader should see (e.g. that the post window reports SuperDirt listening on port 57120) with a sample line, and do not treat a wording difference between a message and the docs as something to fix on either side.
 
 ## Style Rules
 

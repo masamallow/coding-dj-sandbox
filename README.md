@@ -110,7 +110,7 @@ cabal repl
 
 ## 🎛️ Usage
 
-1. Launch SuperCollider, open `boot/superdirt_startup.scd` in the SC IDE and evaluate it (or have the user `startup.scd` load it); wait until the post window reports `SuperDirt: listening to Tidal on port 57120`.
+1. Launch SuperCollider, open `boot/superdirt_startup.scd` in the SC IDE and evaluate it (or have the user `startup.scd` load it); wait until the post window reports that SuperDirt is listening on port 57120 (a line like `SuperDirt: listening on port 57120`).
 2. Open a `.tidal` file under `patterns/` in VS Code.  
    The first evaluation boots Tidal through `boot/ghci` and `BootTidal.hs`.
 3. Evaluate: `Shift+Enter` runs the current statement, `Ctrl+Enter` the blank-line-separated block under the cursor, and `Ctrl+Alt+H` hushes every channel.

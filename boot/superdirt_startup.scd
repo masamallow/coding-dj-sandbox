@@ -19,8 +19,8 @@ Per-machine values (audio device, channel counts, latency, personal sample folde
 which is git-ignored; start it from superdirt_local.example.scd next to it. Anything it leaves out
 keeps the defaults below.
 
-The post window reports success with:
-	SuperDirt: listening to Tidal on port 57120
+The post window reports success with a line like:
+	SuperDirt: listening on port 57120
 
 SuperDirt.start (one line, no file) starts SuperDirt with close to the same defaults and remains
 the quickest check when something is wrong: use it to tell a server problem from a problem in this file.

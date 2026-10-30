@@ -107,7 +107,7 @@ After changing the installed set by any other means, regenerate it with `Quarks.
 > [!NOTE]
 > The parser's comments also list a short `quarkname[@refspec]` line form ([`Quarks.sc` lines 66–69 at the SuperCollider Version-3.14.1 tag](https://github.com/supercollider/supercollider/blob/Version-3.14.1/SCClassLibrary/Common/Quarks/Quarks.sc#L66-L69)), but every line is matched first against `re = "^([^=]+)=?([^@]+)@?(.*)$"`, which splits `SuperDirt@v1.7.4` into the name `SuperDirt@v1.7.` and the URL `4`.  
 > That is why `boot/quarks.txt` keeps the long `localPath=url@refspec` form, SuperCollider's own `~/Library/Application Support/...` quark folder included, instead of bare quark names.  
-> Decided by reading the parser (2026-10); the short form was not run.
+> Decided by reading the parser; the long form then ran as written (2026-10), the short form was not run.
 
 </details>
 
@@ -138,7 +138,7 @@ The SuperDirt README also offers `include("SuperDirt")`, which installs the head
 
 The active SuperDirt repository is <https://codeberg.org/musikinformatik/SuperDirt>; the GitHub repository is archived.  
 The Quarks directory points at the Codeberg repository; an install made before the move may still track the archived GitHub clone — check the source in the Quarks GUI before updating.  
-Before bumping the pinned version, check whether the current Tidal release notes require a particular SuperDirt version and the minimum Tidal prints at stream start (`Waiting for SuperDirt (v.x.y.z or higher)`).
+Before bumping the pinned version, check whether the current Tidal release notes require a particular SuperDirt version and the minimum Tidal prints while it waits for SuperDirt (a line like `Waiting for SuperDirt (v.x.y.z or higher)`, shown only when Tidal boots before SuperDirt is up).
 
 ## 5. SuperDirt startup file
 
@@ -146,7 +146,7 @@ Before bumping the pinned version, check whether the current Tidal release notes
 It is adapted from the example shipped with the SuperDirt quark (`downloaded-quarks/SuperDirt/superdirt_startup.scd`); lines marked `local:` are the deviations, so an upgrade only needs a diff against the new example.
 
 `[GUI]` Open the file in the SuperCollider IDE, place the cursor inside the outer parentheses and press Cmd+Return.  
-The post window should end with `SuperDirt: listening to Tidal on port 57120`.
+The post window should end with SuperDirt reporting that it is listening on port 57120 (a line like `SuperDirt: listening on port 57120`).
 
 To have SuperCollider do this on launch, open the user startup file (File > Open startup file) and add one line with the absolute path of this repository:
 
@@ -191,6 +191,9 @@ cabal repl
 ```
 
 Plain `ghci` outside `cabal repl` will not see `tidal` — that is by design; the dependency is scoped to this project.
+
+`tidal_version` is a string maintained by hand in Tidal's source and has lagged behind the package version; read it as proof that the import works.  
+The version actually built is the `-package-id` that `:show packages` prints at the same prompt (or the `tidal` entry in `dist-newstyle/cache/plan.json`).
 
 ## 7. BootTidal.hs
 
@@ -252,7 +255,7 @@ When re-installing after an upgrade, add `--overwrite-policy=always`.
 
 ## 10. Smoke test
 
-1. `[GUI]` In the SC IDE, evaluate [boot/superdirt_startup.scd](../boot/superdirt_startup.scd) (step 5) and wait until the post window reports `SuperDirt: listening to Tidal on port 57120`.
+1. `[GUI]` In the SC IDE, evaluate [boot/superdirt_startup.scd](../boot/superdirt_startup.scd) (step 5) and wait until the post window reports that SuperDirt is listening on port 57120 (a line like `SuperDirt: listening on port 57120`).
 2. `[GUI]` In VS Code, open a `.tidal` file under `patterns/` and evaluate with `Shift+Enter`:
 
    ```haskell
@@ -269,13 +272,13 @@ When re-installing after an upgrade, add `--overwrite-policy=always`.
   If the solver keeps an old version, delete `dist-newstyle/` and build again.  
   Afterwards, diff the part of `BootTidal.hs` above the `-- Local additions` marker against the copy shipped with the new release and merge upstream changes.
 - GHC upgrade (via `ghcup`): re-run `cabal build`; the store is per-GHC-version, so the first build recompiles dependencies.
-- SuperDirt update: bump the refspec in `boot/quarks.txt` after checking the Tidal release notes and the `Waiting for SuperDirt (v.x.y.z or higher)` message, then `[GUI]` re-run the install procedure of step 4 (`Quarks.load` on a dedicated SuperCollider, `Quarks.install` with the new refspec otherwise) and recompile.  
+- SuperDirt update: bump the refspec in `boot/quarks.txt` after checking the Tidal release notes and the minimum version Tidal prints while waiting for SuperDirt (step 4), then `[GUI]` re-run the install procedure of step 4 (`Quarks.load` on a dedicated SuperCollider, `Quarks.install` with the new refspec otherwise) and recompile.  
   Afterwards diff `boot/superdirt_startup.scd` against the new upstream example and commit both files.  
   Dirt-Samples and Vowel are unpinned and follow their default branches; `[GUI]` `Quarks.update("Dirt-Samples")` in the SC IDE pulls new samples.
 
 ## Troubleshooting
 
-- No sound: confirm the startup file (or `SuperDirt.start`) ran in the SC IDE and the post window shows `SuperDirt: listening to Tidal on port 57120`; re-evaluate the pattern.
+- No sound: confirm the startup file (or `SuperDirt.start`) ran in the SC IDE and the post window reported that SuperDirt is listening on port 57120; re-evaluate the pattern.
 - REPL fails to boot from VS Code: check the TidalCycles output channel.  
   If `cabal` is not found, the wrapper's PATH prepend should cover it — confirm `tidalcycles.ghciPath` points at [boot/ghci](../boot/ghci) and the script is executable.  
   A `Not a directory` error means the setting points at a file not named `ghci`; the extension appends `/ghci` to it.
@@ -283,6 +286,7 @@ When re-installing after an upgrade, add `--overwrite-policy=always`.
 - "cannot be opened" dialogs for sc3-plugins: run the `xattr` command from step 3 and recompile the class library.
 - `sc3plugins are necessary and missing` in the post window: sc3-plugins is not installed or not compiled in (step 3); SuperDirt still runs, minus the synths and effects that need it.
 - `Quarks.load` posts `Unreadable line` or a `Quark ... not found` error: `boot/quarks.txt` allows no comments or blank lines, and each line must be `localPath=url[@refspec]` as written by `Quarks.save`.
+- `WARNING: Tag not found: Quark: Vowel[]` (and the same for Dirt-Samples) after `Quarks.load`: lines without a refspec pass an empty one, which the tag check rejects and skips; the Quark is still installed at its default branch, so the warning is harmless.
 - First server boot may trigger a macOS microphone-permission prompt (the server opens input buses); allow or deny — playback works either way.
 - Bluetooth headsets often fail with an input/output sample-rate mismatch; align both devices in Audio MIDI Setup, or pick the built-in output via `device` in `boot/superdirt_local.scd`.
 - HLS shows errors in `BootTidal.hs` or a `.tidal` file: `hie.yaml` should make HLS ignore both; check that the file falls under a `none` cradle there and restart the language server.
