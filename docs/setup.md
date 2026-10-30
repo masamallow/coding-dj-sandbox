@@ -44,6 +44,11 @@ brew --version
 
 Cross-check the GHC version against the CI-tested GHC versions listed in the current [Tidal release notes](https://codeberg.org/uzu/tidal/releases) before building.
 
+> [!NOTE]
+> As of Tidal v1.10.3 that matrix builds only `ghc: 9.12.2` and `ghc: 9.6.7`, the other entries being commented out ([`.forgejo/workflows/ci.yml` at the v1.10.3 tag](https://codeberg.org/uzu/tidal/src/tag/v1.10.3/.forgejo/workflows/ci.yml)).  
+> This repository was built with GHC 9.10.3, the version GHCup had set here, which is not in that matrix; `cabal build` and `import Sound.Tidal.Context` worked without changes (checked 2026-10).  
+> Treat the matrix as known-good versions, not as a hard limit.
+
 VS Code should have the extensions recommended by [.vscode/extensions.json](../.vscode/extensions.json):
 `tidalcycles.vscode-tidalcycles`, `haskell.haskell`, and `haskell.language-haskell`
 (the syntax extension formerly published as `justusadam.language-haskell`; uninstall the old one if both are installed).
@@ -99,6 +104,11 @@ Quarks.load("/absolute/path/to/coding-dj-sandbox/boot/quarks.txt")
 The file format is the one `Quarks.save` writes (`localPath=url[@refspec]`, no comments or blank lines).  
 After changing the installed set by any other means, regenerate it with `Quarks.save("/absolute/path/to/coding-dj-sandbox/boot/quarks.txt")` and commit the result.
 
+> [!NOTE]
+> The parser's comments also list a short `quarkname[@refspec]` line form ([`Quarks.sc` lines 66–69 at the SuperCollider Version-3.14.1 tag](https://github.com/supercollider/supercollider/blob/Version-3.14.1/SCClassLibrary/Common/Quarks/Quarks.sc#L66-L69)), but every line is matched first against `re = "^([^=]+)=?([^@]+)@?(.*)$"`, which splits `SuperDirt@v1.7.4` into the name `SuperDirt@v1.7.` and the URL `4`.  
+> That is why `boot/quarks.txt` keeps the long `localPath=url@refspec` form, SuperCollider's own `~/Library/Application Support/...` quark folder included, instead of bare quark names.  
+> Decided by reading the parser (2026-10); the short form was not run.
+
 </details>
 
 <details name="quarks-install">
@@ -124,7 +134,7 @@ Verify: Language > Quarks should list SuperDirt, Dirt-Samples and Vowel as insta
 ls "$HOME/Library/Application Support/SuperCollider/downloaded-quarks/Dirt-Samples" | head
 ```
 
-The SuperDirt README also offers `include("SuperDirt")`, which installs the head of the develop branch and bypasses the pin; the tidalcycles.org macOS page uses the `Quarks.install` form of procedure B.
+The SuperDirt README also offers `include("SuperDirt")`, which installs the head of the develop branch and bypasses the pin; the [tidalcycles.org macOS page](https://tidalcycles.org/docs/getting-started/macos_install/) uses the `Quarks.install` form of procedure B, pinned to an older tag than `boot/quarks.txt` (`"v1.7.3"` as of 2026-10).
 
 The active SuperDirt repository is <https://codeberg.org/musikinformatik/SuperDirt>; the GitHub repository is archived.  
 The Quarks directory points at the Codeberg repository; an install made before the move may still track the archived GitHub clone — check the source in the Quarks GUI before updating.  
@@ -146,6 +156,11 @@ load("/absolute/path/to/coding-dj-sandbox/boot/superdirt_startup.scd");
 
 That absolute path belongs in the per-user startup file, never in the repository.  
 `SuperDirt.start` (one line, no file) starts SuperDirt with close to the same defaults and is the quickest way to tell a server problem from a problem in the startup file.
+
+> [!NOTE]
+> The upstream [Tidal start page](https://tidalcycles.org/docs/getting-started/tidal_start/) warns that `SuperDirt.start` "will often fail" with `ERROR: No more buffer numbers -- free some buffers before allocating more` and prescribes a custom startup script instead.  
+> In SuperDirt v1.7.4, `SuperDirt.start` raises that limit itself (`server.options.numBuffers = 1024 * 256;`, [`classes/extSuperDirtStartup.sc` line 11 at the v1.7.4 tag](https://codeberg.org/musikinformatik/SuperDirt/src/tag/v1.7.4/classes/extSuperDirtStartup.sc#L11)), so the warning predates the version pinned here (checked 2026-10).  
+> If the error does appear, the startup file above is the fix that page describes.
 
 ## 6. Tidal library (repo-scoped cabal build)
 
@@ -180,6 +195,12 @@ Put local customization (aliases, latency, Link sync, imports from `src/`) below
 The Tidal extension spawns the REPL through `/bin/sh` without setting a working directory, so on its own it cannot find this cabal project.  
 [boot/ghci](../boot/ghci) fixes that: it puts the GHCup toolchain on PATH, changes to the repo root, and launches `cabal repl`.  
 The wrapper must be named `ghci`: the extension treats `tidalcycles.ghciPath` as the location of a `ghci` binary and appends `/ghci` to any other path.
+
+> [!NOTE]
+> The extension README shows the setting only as paths ending in `ghci` (`"/path/to/ghci"`); the reason is in the source of the installed version, [`src/getGhciBasePath.ts` at the v2.0.2 tag](https://github.com/tidalcycles/vscode-tidalcycles/blob/v2.0.2/src/getGhciBasePath.ts): a leading `~` is replaced by the home directory, a trailing `ghci` is stripped (`resolvedPath.endsWith('ghci') ? resolvedPath.substring(0, resolvedPath.length - 4) : resolvedPath`), and [`src/getProcess.ts`](https://github.com/tidalcycles/vscode-tidalcycles/blob/v2.0.2/src/getProcess.ts) spawns `path.join(getGhciBasePath(), 'ghci')` through a shell.  
+> A wrapper under another name failed here with `Not a directory`; renaming it to `ghci` fixed it (2026-10).  
+> The boot-file order in step 7 comes from [`src/getTidalBootPath.ts`](https://github.com/tidalcycles/vscode-tidalcycles/blob/v2.0.2/src/getTidalBootPath.ts) of the same version.  
+> The README also documents a `tidalcycles.useBootFileInCurrentDirectory` setting; the v2.0.2 source never reads it and always tries the workspace `BootTidal.hs`, so leave it unset.
 
 `.vscode/settings.json` is git-ignored because `tidalcycles.ghciPath` is machine-specific.  
 Create it from the committed template and point `tidalcycles.ghciPath` at the wrapper (a leading `~` is expanded by the extension):

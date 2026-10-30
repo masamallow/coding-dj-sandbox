@@ -146,6 +146,9 @@ SuperCollider's own startup mechanism is configuration, not automation: a `load(
 - For Tidal-specific documentation lookups, prefer direct web fetches from <https://tidalcycles.org> and <https://codeberg.org/uzu/tidal> over Context7.  
   Context7 indexes from GitHub; the active Tidal sources are on Codeberg and may be missing or outdated in the Context7 index.  
   Use Context7 freely for non-Tidal libraries (general Haskell ecosystem packages such as `text`, `aeson`, `mtl`, etc.).
+- When a step deviates from the upstream documentation because the documented way did not work, or does not hold, for the versions this repository assumes, record it next to the step in `docs/setup.md` as a `NOTE` alert:
+  what upstream says (a short quote and a link pinned to a tag or commit), what is done instead, and the date it was checked.  
+  Upstream pages get rewritten; the pinned link and the date keep the note verifiable later.
 
 ## Style Rules
 
