@@ -88,7 +88,7 @@ SuperDirt treats it as optional: without it the post window warns `sc3plugins ar
 [boot/quarks.txt](../boot/quarks.txt) lists the Quarks this setup needs: SuperDirt pinned to a release tag, plus its dependencies Vowel and Dirt-Samples.  
 Pick one of the two procedures below, depending on whether this machine's SuperCollider serves only this repository.
 
-<details name="quarks-install" open>
+<details name="quarks-install">
 <summary>A. SuperCollider is dedicated to this setup: load the whole set with <code>Quarks.load</code></summary>
 
 > [!CAUTION]
