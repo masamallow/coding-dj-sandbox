@@ -14,6 +14,11 @@ Two ways to run it:
 			  load("/absolute/path/to/coding-dj-sandbox/boot/superdirt_startup.scd");
 		  That absolute path lives in the user startup file, never in this repository.
 
+Per-machine values (audio device, channel counts, latency, personal sample folders) go into
+	boot/superdirt_local.scd
+which is git-ignored; start it from superdirt_local.example.scd next to it. Anything it leaves out
+keeps the defaults below.
+
 The post window reports success with:
 	SuperDirt: listening to Tidal on port 57120
 
@@ -26,6 +31,14 @@ the quickest check when something is wrong: use it to tell a server problem from
 // after thisProcess.nowExecutingPath has been reset (it is nil when evaluated from an unsaved buffer).
 ~dirtProjectRoot = thisProcess.nowExecutingPath !? { |path| path.dirname.dirname };
 
+// local: per-machine overrides live in the git-ignored boot/superdirt_local.scd (start from
+// superdirt_local.example.scd); its statements fill ~dirtLocal, and the defaults below yield to its keys.
+~dirtLocal = ();
+thisProcess.nowExecutingPath !? { |path|
+	var localFile = path.dirname +/+ "superdirt_local.scd";
+	if(File.exists(localFile)) { localFile.load };
+};
+
 s.reboot { // server options are only updated on reboot
 	// configure the sound server: here you could add hardware specific options
 	// see http://doc.sccode.org/Classes/ServerOptions.html
@@ -33,17 +46,19 @@ s.reboot { // server options are only updated on reboot
 	s.options.memSize = 8192 * 32; // increase this if you get "alloc failed" messages
 	s.options.numWireBufs = 2048; // increase this if you get "exceeded number of interconnect buffers" messages
 	s.options.maxNodes = 1024 * 32; // increase this if you are getting drop outs and the message "too many nodes"
-	s.options.numOutputBusChannels = 2; // set this to your hardware output channel size, if necessary
-	s.options.numInputBusChannels = 2; // set this to your hardware output channel size, if necessary
+	s.options.numOutputBusChannels = ~dirtLocal[\numOutputBusChannels] ? 2; // set this to your hardware output channel size, if necessary (local: or in superdirt_local.scd)
+	s.options.numInputBusChannels = ~dirtLocal[\numInputBusChannels] ? 2; // set this to your hardware output channel size, if necessary (local: or in superdirt_local.scd)
+	~dirtLocal[\device] !? { |name| s.options.device = name }; // local: audio device by name, from superdirt_local.scd (list them with ServerOptions.devices)
 	// boot the server and start SuperDirt
 	s.waitForBoot {
 		~dirt.stop; // stop any old ones, avoid duplicate dirt (if it is nil, this won't do anything)
-		~dirt = SuperDirt(2, s); // two output channels, increase if you want to pan across more channels
+		~dirt = SuperDirt(~dirtLocal[\numChannels] ? 2, s); // two output channels, increase if you want to pan across more channels (local: or in superdirt_local.scd)
 		~dirt.loadSoundFiles;   // load samples (path containing a wildcard can be passed in)
 		// local: project samples would go under <repo>/samples/<name>/*.wav; uncomment to load them as well.
 		// ~dirt.loadSoundFiles(~dirtProjectRoot +/+ "samples" +/+ "*");
+		(~dirtLocal[\samplePaths] ? []).do { |wildcard| ~dirt.loadSoundFiles(wildcard.standardizePath) }; // local: personal sample folders from superdirt_local.scd
 		// s.sync; // optionally: wait for samples to be read
-		~dirt.start(57120, 0 ! 12);   // start listening on port 57120, create two busses each sending audio to channel 0
+		~dirt.start(57120, 0 ! (~dirtLocal[\numOrbits] ? 12));   // start listening on port 57120, create two busses each sending audio to channel 0 (local: orbit count from superdirt_local.scd)
 		SuperDirt.default = ~dirt; // make this instance available in sclang (optional)
 
 		// optional, needed for convenient access from sclang:
@@ -54,11 +69,13 @@ s.reboot { // server options are only updated on reboot
 			~d10 = ~dirt.orbits[9]; ~d11 = ~dirt.orbits[10]; ~d12 = ~dirt.orbits[11];
 		);
 
+		~dirtLocal[\onStart].value(~dirt); // local: hook from superdirt_local.scd, e.g. MIDI setup or extra SynthDefs
+
 		// local: sc3-plugins is a per-machine install into SuperCollider's Extensions folder (docs/setup.md),
 		// not something this file can load. Without it SuperDirt warns "sc3plugins are necessary and missing"
 		// and skips the extra synths and effects that need it; the core sounds still work.
 	};
 
-	s.latency = 0.3; // increase this if you get "late" messages
+	s.latency = ~dirtLocal[\latency] ? 0.3; // increase this if you get "late" messages (local: or in superdirt_local.scd)
 };
 );

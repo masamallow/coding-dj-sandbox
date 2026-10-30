@@ -57,6 +57,8 @@ Older blog posts and tutorials may still link to GitHub; treat those as informat
   It is evaluated in the SuperCollider IDE, or run on launch by a `load("<absolute path>")` line in the user's `startup.scd` (that line stays outside the repo).
 - `boot/quarks.txt` — The SuperCollider Quarks this setup needs (SuperDirt pinned to a release tag, plus its dependencies), in the `localPath=url[@refspec]` format that `Quarks.save` writes and `Quarks.load` reads.  
   The file allows no comments or blank lines; its `~/Library/Application Support/SuperCollider/...` entries are SuperCollider's fixed per-user quark folder, not a location of this repo.
+- `boot/superdirt_local.example.scd` — Template for the git-ignored `boot/superdirt_local.scd`, which the startup file loads before booting; each line sets one key in `~dirtLocal` (audio device, channel counts, orbit count, latency, personal sample folders, an `onStart` hook) and overrides the tracked default.  
+  Project-level defaults change in `boot/superdirt_startup.scd`; machine- or session-level values change only in the local file.
 - `.vscode/settings.example.json` — Template for the git-ignored `.vscode/settings.json`;
   it carries the shared settings (including the `*.tidal` → `haskell` association the extension needs to activate) plus a placeholder `tidalcycles.ghciPath`, which is machine-specific.
 - `hie.yaml` (workspace root) — hie-bios config for HLS: `src/` is loaded through cabal, while `patterns/` and `BootTidal.hs` get a `none` cradle so HLS ignores them instead of reporting errors.
@@ -139,7 +141,7 @@ SuperCollider's own startup mechanism is configuration, not automation: a `load(
   The cabal library sets `default-language: GHC2021`, so its extensions are already on in `src/` modules; do not add redundant `LANGUAGE` pragmas.
 - Examples found online are often in Strudel syntax; translate them to TidalCycles unless the user asked for Strudel.
 - Machine-specific values (absolute paths, `~/...` paths of this repo, hostnames) never go into tracked files.  
-  They belong in the git-ignored `.vscode/settings.json`, in VS Code user settings, or in the user's SuperCollider `startup.scd`; tracked files carry placeholders (see `.vscode/settings.example.json`).  
+  They belong in the git-ignored `.vscode/settings.json` or `boot/superdirt_local.scd`, in VS Code user settings, or in the user's SuperCollider `startup.scd`; tracked files carry placeholders (see `.vscode/settings.example.json` and `boot/superdirt_local.example.scd`).  
   The `~/Library/Application Support/SuperCollider/...` entries in `boot/quarks.txt` are not machine-specific: that is SuperCollider's fixed per-user quark folder, written by `Quarks.save`.
 - HLS diagnostics on `.tidal` files or `BootTidal.hs` are noise, not bugs: those files are not Haskell modules, and `hie.yaml` tells HLS to ignore them.  
   Do not rewrite a pattern or the boot file to satisfy HLS.

@@ -154,7 +154,17 @@ To have SuperCollider do this on launch, open the user startup file (File > Open
 load("/absolute/path/to/coding-dj-sandbox/boot/superdirt_startup.scd");
 ```
 
-That absolute path belongs in the per-user startup file, never in the repository.  
+That absolute path belongs in the per-user startup file, never in the repository.
+
+Values that differ per machine — audio device, hardware channel counts, latency, personal sample folders — do not go into the tracked file either.  
+They go into `boot/superdirt_local.scd`, which is git-ignored and which the startup file loads before booting the server; create it from the template and uncomment what differs here:
+
+```sh
+cp boot/superdirt_local.example.scd boot/superdirt_local.scd
+```
+
+Each line sets one key in `~dirtLocal` (`device`, `numOutputBusChannels`, `numInputBusChannels`, `numChannels`, `numOrbits`, `latency`, `samplePaths`, `onStart`); anything left commented keeps the default in `boot/superdirt_startup.scd`.  
+Values that need no reboot can also be changed live in the SC IDE, e.g. `s.latency = 0.2`.  
 `SuperDirt.start` (one line, no file) starts SuperDirt with close to the same defaults and is the quickest way to tell a server problem from a problem in the startup file.
 
 > [!NOTE]
@@ -274,7 +284,7 @@ When re-installing after an upgrade, add `--overwrite-policy=always`.
 - `sc3plugins are necessary and missing` in the post window: sc3-plugins is not installed or not compiled in (step 3); SuperDirt still runs, minus the synths and effects that need it.
 - `Quarks.load` posts `Unreadable line` or a `Quark ... not found` error: `boot/quarks.txt` allows no comments or blank lines, and each line must be `localPath=url[@refspec]` as written by `Quarks.save`.
 - First server boot may trigger a macOS microphone-permission prompt (the server opens input buses); allow or deny — playback works either way.
-- Bluetooth headsets often fail with an input/output sample-rate mismatch; align both devices in Audio MIDI Setup or use the built-in output.
+- Bluetooth headsets often fail with an input/output sample-rate mismatch; align both devices in Audio MIDI Setup, or pick the built-in output via `device` in `boot/superdirt_local.scd`.
 - HLS shows errors in `BootTidal.hs` or a `.tidal` file: `hie.yaml` should make HLS ignore both; check that the file falls under a `none` cradle there and restart the language server.
 
 ## Appendix: global install (upstream docs approach)

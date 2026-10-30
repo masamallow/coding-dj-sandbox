@@ -38,6 +38,7 @@ Patterns and examples default to TidalCycles.
 ├── boot/ghci                 # REPL wrapper (cabal repl) spawned by the VS Code extension
 ├── boot/superdirt_startup.scd   # SuperCollider startup file: boots the server and starts SuperDirt
 ├── boot/quarks.txt           # SuperCollider Quarks to install (SuperDirt pinned to a release, plus dependencies)
+├── boot/superdirt_local.example.scd   # template for the git-ignored per-machine overrides (device, channels, latency)
 ├── docs/setup.md             # environment setup guide
 ├── BootTidal.hs              # Tidal boot script piped into the REPL
 ├── coding-dj-sandbox.cabal   # minimal cabal package depending on tidal
@@ -50,7 +51,8 @@ Patterns and examples default to TidalCycles.
 `BootTidal.hs` is the boot file shipped with the current Tidal release;
 the VS Code extension auto-detects it at the workspace root, and local additions go below the `-- Local additions` marker at its end so upgrades diff cleanly.  
 Helper modules (e.g. `src/MyHelpers.hs`) are registered under `exposed-modules` in `coding-dj-sandbox.cabal` so both the REPL and HLS see them.  
-`boot/` holds the start-up pieces of both engines: `boot/ghci` for the Tidal REPL, and `boot/superdirt_startup.scd` plus `boot/quarks.txt` for the SuperCollider side (the startup file stays close to the upstream example, with deviations marked `local:`).
+`boot/` holds the start-up pieces of both engines: `boot/ghci` for the Tidal REPL, and `boot/superdirt_startup.scd` plus `boot/quarks.txt` for the SuperCollider side (the startup file stays close to the upstream example, with deviations marked `local:`).  
+Per-machine values for the SuperCollider side live in the git-ignored `boot/superdirt_local.scd`, created from `boot/superdirt_local.example.scd`.
 
 ## ✅ Prerequisites
 
