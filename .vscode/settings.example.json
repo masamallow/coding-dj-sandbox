@@ -5,6 +5,8 @@
   "files.trimTrailingWhitespace": true,
   "files.insertFinalNewline": true,
   "tidalcycles.ghciPath": "~/path/to/coding-dj-sandbox/boot/ghci",
+  "haskell.formattingProvider": "ormolu",
+  "haskell.plugin.ormolu.config.external": true,
   "[haskell]": {
     "editor.tabSize": 2,
     "editor.insertSpaces": true

@@ -251,7 +251,9 @@ cabal install ormolu hlint
 ```
 
 This compiles for a while and installs binaries into `~/.cabal/bin` (on PATH via GHCup's shell setup).  
-When re-installing after an upgrade, add `--overwrite-policy=always`.
+When re-installing after an upgrade, add `--overwrite-policy=always`.  
+The settings template (step 8) sets `haskell.plugin.ormolu.config.external`, so the Haskell Language Server formats with this same `ormolu` instead of the copy compiled into it;
+the editor and the shell then agree on the output.
 
 ## 10. Smoke test
 

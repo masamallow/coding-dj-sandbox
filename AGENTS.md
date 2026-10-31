@@ -2,11 +2,9 @@
 
 ## Purpose
 
-A sandbox for learning live-coding music ("Coding DJ") on macOS, with Haskell catch-up alongside.
-
-The repository serves two parallel goals:
-1. Develop live-coding music performance skills using **TidalCycles**.
-2. Use Tidal's Haskell foundation as a vehicle for **learning Haskell**.
+A sandbox for learning live-coding music ("Coding DJ") on macOS with **TidalCycles**.  
+The user picks up Haskell along the way, through Tidal's Haskell foundation, but Haskell is not a goal of its own:
+explain it where a pattern or helper needs it, and do not steer the work toward Haskell exercises.
 
 Assume strong general programming fundamentals; do not assume Haskell or DSP knowledge.
 
@@ -138,7 +136,7 @@ SuperCollider's own startup mechanism is configuration, not automation: a `load(
   SuperDirt treats it as optional and warns `sc3plugins are necessary and missing` when it is absent.
 - When suggesting Haskell that goes into `BootTidal.hs` or imported helper modules under `src/`, target the GHC that GHCup has installed (check `ghc --version`).  
   Do not assume language features from newer GHC releases unless explicitly approved.  
-  The cabal library sets `default-language: GHC2021`, so its extensions are already on in `src/` modules; do not add redundant `LANGUAGE` pragmas.
+  The cabal library's `default-language` already turns on a set of extensions in `src/` modules; do not add `LANGUAGE` pragmas for those (check `coding-dj-sandbox.cabal` for the edition in use).
 - Examples found online are often in Strudel syntax; translate them to TidalCycles unless the user asked for Strudel.
 - Machine-specific values (absolute paths, `~/...` paths of this repo, hostnames) never go into tracked files.  
   They belong in the git-ignored `.vscode/settings.json` or `boot/superdirt_local.scd`, in VS Code user settings, or in the user's SuperCollider `startup.scd`; tracked files carry placeholders (see `.vscode/settings.example.json` and `boot/superdirt_local.example.scd`).  
@@ -158,7 +156,7 @@ SuperCollider's own startup mechanism is configuration, not automation: a `load(
 
 Path-scoped conventions live under [.claude/rules/](./.claude/rules/):
 
-- [tidal-patterns.md](./.claude/rules/tidal-patterns.md) — follow when generating or editing `.tidal` files (channel layout, mini-notation first, in-file comments).
+- [tidal-patterns.md](./.claude/rules/tidal-patterns.md) — follow when generating or editing `.tidal` files (pattern layout, mini-notation first, one statement per block).
 - [haskell-style.md](./.claude/rules/haskell-style.md) — follow when generating or editing `.hs` files (Ormolu after writes, HLint, learning-mode comments).
 
 Claude Code loads these automatically when matching files are touched;

@@ -8,13 +8,11 @@
 [![upstream: Codeberg](https://img.shields.io/badge/upstream-Codeberg-2185D0?logo=codeberg&logoColor=white)](https://codeberg.org/uzu/tidal)
 [![license: TBD (MIT planned)](https://img.shields.io/badge/license-TBD%20(MIT%20planned)-lightgrey)](#-license)
 
-A sandbox for **Coding DJ** (live-coding music) on macOS, built on TidalCycles + SuperCollider + VS Code,
-with Haskell catch-up as a parallel track through Tidal's Haskell foundation.
+A sandbox for **Coding DJ** (live-coding music) on macOS, built on TidalCycles + SuperCollider + VS Code.
 
-## 🎯 Goals
+## 🎯 Goal
 
-- Develop live-coding music performance skills with [TidalCycles](https://tidalcycles.org/).
-- Use Tidal's Haskell foundation as a vehicle for learning Haskell.
+Develop live-coding music performance skills with [TidalCycles](https://tidalcycles.org/).
 
 Patterns and examples default to TidalCycles.  
 [Strudel](https://strudel.cc/) is Tidal's browser-based sibling and a handy way to play without the SuperCollider stack; translating between the two is routine.
@@ -66,6 +64,7 @@ Per-machine values for the SuperCollider side live in the git-ignored `boot/supe
     Formatting and linting policy is delegated to these tools (see [.claude/rules/haskell-style.md](./.claude/rules/haskell-style.md)).
   - `haskell.language-haskell` for syntax highlighting, which `.tidal` files reuse.
 - Ormolu and HLint CLIs for formatting and linting outside the editor: `cabal install ormolu hlint`.
+  - The settings template points HLS at this Ormolu, so the editor and the shell format identically.
 
 > [!NOTE]
 > The Tidal extension sees little upstream activity: as of 2026-10 it has had no release since 2025-05, and the official Tidal tutorial assumes the Pulsar editor.  
@@ -116,7 +115,7 @@ cabal repl
 3. Evaluate: `Shift+Enter` runs the current statement, `Ctrl+Enter` the blank-line-separated block under the cursor, and `Ctrl+Alt+H` hushes every channel.
 
 Keep one artistic idea per `.tidal` file and iterate inside it, leaving earlier variants commented out for A/B comparison.  
-Conventions for channels, mini-notation and comments are in [.claude/rules/tidal-patterns.md](./.claude/rules/tidal-patterns.md).
+Conventions for pattern layout, mini-notation and evaluation blocks are in [.claude/rules/tidal-patterns.md](./.claude/rules/tidal-patterns.md).
 
 ## 🔄 Maintenance
 
