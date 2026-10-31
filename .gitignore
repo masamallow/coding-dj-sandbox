@@ -37,3 +37,8 @@ cabal.project.local~
 # Per-machine overrides for boot/superdirt_startup.scd (audio device, channel counts, latency);
 # create it from boot/superdirt_local.example.scd (see docs/setup.md).
 boot/superdirt_local.scd
+
+### Claude Code ###
+# Per-machine permission grants (absolute Read paths, allowed domains);
+# the shared permissions live in .claude/settings.json.
+.claude/settings.local.json

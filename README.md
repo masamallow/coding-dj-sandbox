@@ -6,7 +6,7 @@
 [![editor: VS Code](https://img.shields.io/badge/editor-VS%20Code-0078d7)](https://marketplace.visualstudio.com/items?itemName=tidalcycles.vscode-tidalcycles)
 [![platform: macOS (Apple Silicon)](https://img.shields.io/badge/platform-macOS%20(Apple%20Silicon)-000000?logo=apple&logoColor=white)](./docs/setup.md)
 [![upstream: Codeberg](https://img.shields.io/badge/upstream-Codeberg-2185D0?logo=codeberg&logoColor=white)](https://codeberg.org/uzu/tidal)
-[![license: TBD (MIT planned)](https://img.shields.io/badge/license-TBD%20(MIT%20planned)-lightgrey)](#-license)
+[![license: MIT](https://img.shields.io/badge/license-MIT-blue)](#-license)
 
 A sandbox for **Coding DJ** (live-coding music) on macOS, built on TidalCycles + SuperCollider + VS Code.
 
@@ -42,6 +42,7 @@ Patterns and examples default to TidalCycles.
 ├── coding-dj-sandbox.cabal   # minimal cabal package depending on tidal
 ├── hie.yaml                  # HLS loads src/ via cabal and ignores patterns/ and BootTidal.hs
 ├── .vscode/settings.example.json   # template for the git-ignored .vscode/settings.json
+├── REUSE.toml                # per-file licenses (REUSE spec): MIT, except upstream-derived files; texts in LICENSES/
 ├── AGENTS.md                 # instructions for AI coding agents (imported by CLAUDE.md)
 └── README.md
 ```
@@ -149,5 +150,11 @@ Path-scoped conventions for `.tidal` and `.hs` files are under [.claude/rules/](
 
 ## 📄 License
 
-Not yet licensed (MIT planned); to be decided before publishing.  
-Patterns and Haskell snippets inside may incorporate ideas from the Tidal community — credit upstream when copying non-trivial work.
+MIT, except for the files copied or adapted from upstream, which keep their upstream licenses.  
+[REUSE.toml](./REUSE.toml) declares the license of every file and [LICENSES/](./LICENSES/) holds the texts;
+`uvx reuse lint` checks that the two agree.
+
+- `BootTidal.hs` — copied from the `tidal` Hackage package (GPL-3.0-only).
+- `patterns/workshop-*.tidal` — transcriptions of the tidalcycles.org workshop tutorial (CC BY-SA 4.0).
+
+When copying further non-trivial work from the Tidal community, declare its license in REUSE.toml the same way.

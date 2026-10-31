@@ -1,0 +1,30 @@
+# Per-file license declaration in the REUSE format (https://reuse.software/spec/).
+# Everything in this repository is MIT except the files copied or adapted from upstream,
+# listed below with the license they keep. The texts live in LICENSES/;
+# `uvx reuse lint` checks that every file is covered and every referenced text is present.
+version = 1
+SPDX-PackageName = "coding-dj-sandbox"
+SPDX-PackageSupplier = "masamallow"
+SPDX-PackageDownloadLocation = "https://github.com/masamallow/coding-dj-sandbox"
+
+[[annotations]]
+path = "**"
+precedence = "closest"
+SPDX-FileCopyrightText = "2026 masamallow"
+SPDX-License-Identifier = "MIT"
+
+# Verbatim copy of the BootTidal.hs shipped in the `tidal` Hackage package
+# (everything above the "-- Local additions" marker); tidal.cabal declares `license: GPL-3`.
+[[annotations]]
+path = "BootTidal.hs"
+precedence = "override"
+SPDX-FileCopyrightText = "(c) Alex McLean and other contributors, 2025"
+SPDX-License-Identifier = "GPL-3.0-only"
+
+# Transcriptions of the tidalcycles.org workshop tutorial
+# (https://tidalcycles.org/docs/patternlib/tutorials/workshop); the site footer states CC BY-SA 4.0.
+[[annotations]]
+path = "patterns/workshop-*.tidal"
+precedence = "override"
+SPDX-FileCopyrightText = "TidalCycles documentation contributors"
+SPDX-License-Identifier = "CC-BY-SA-4.0"

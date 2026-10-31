@@ -64,6 +64,9 @@ Older blog posts and tutorials may still link to GitHub; treat those as informat
   Register each one under `exposed-modules` in `coding-dj-sandbox.cabal` so the REPL and HLS both see them;
   until the first module exists, `cabal repl` prints `Warning: No exposed modules`, which is expected.
 - `docs/setup.md` — Environment setup guide.
+- `REUSE.toml` + `LICENSES/` — Per-file license declaration in the [REUSE](https://reuse.software/spec/) format:
+  everything is MIT except the files copied or adapted from upstream (`BootTidal.hs`, `patterns/workshop-*.tidal`), which keep their upstream license.  
+  `uvx reuse lint` checks that every file is covered and every referenced text is present.
 
 ## File Conventions
 
@@ -151,6 +154,8 @@ SuperCollider's own startup mechanism is configuration, not automation: a `load(
   Upstream pages get rewritten; the pinned link and the date keep the note verifiable later.
 - Quote program output as an example of its shape, not as an exact expectation: messages change between versions.  
   Write what the reader should see (e.g. that the post window reports SuperDirt listening on port 57120) with a sample line, and do not treat a wording difference between a message and the docs as something to fix on either side.
+- When adding a file copied or adapted from upstream (a Tidal boot file, a tidalcycles.org tutorial), declare its license and copyright holder in `REUSE.toml` and fetch the text with `uvx reuse download <SPDX-ID>`; do not add license headers to the files themselves.  
+  Run `uvx reuse lint` before committing.
 
 ## Style Rules
 

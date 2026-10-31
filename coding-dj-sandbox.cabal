@@ -1,9 +1,9 @@
 cabal-version:      3.4
 name:               coding-dj-sandbox
 version:            0.1.0.0
-synopsis:           Live-coding sandbox for TidalCycles and Haskell learning
--- Not yet licensed (MIT planned); decide before publishing.
-license:            NONE
+synopsis:           Live-coding sandbox for TidalCycles
+license:            MIT
+license-file:       LICENSE
 author:             masamallow
 maintainer:         77992722+masamallow@users.noreply.github.com
 category:           Sound
